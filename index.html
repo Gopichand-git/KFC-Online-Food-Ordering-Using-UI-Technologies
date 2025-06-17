@@ -1,0 +1,4053 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KFC - Kentucky Fried Chicken</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/4.6.2/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" rel="stylesheet">
+    <link rel="icon" type="image/png" href="KFC_logo.svg.png" id="ic"> 
+
+    <!-- Refresh -->
+    <script>
+    if ('scrollRestoration' in history) {
+      history.scrollRestoration = 'manual';
+    }
+    window.addEventListener('beforeunload', () => window.scrollTo(0, 0));
+    window.addEventListener('pageshow', event => {
+      if (event.persisted) window.scrollTo(0, 0);
+    });
+  </script>
+
+        <style>
+        :root {
+            --kfc-red: #e4002b;
+            --kfc-dark-red: #c20025;
+            --kfc-orange: #ff6900;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f8f9fa;
+        }
+
+        .navbar-brand img {
+            height: 80px;
+            margin-left: -100px;
+        }
+
+        .hero-section {
+            background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 800"><rect fill="%23e4002b" width="1200" height="800"/><circle fill="%23ff6900" cx="300" cy="200" r="100" opacity="0.3"/><circle fill="%23ff6900" cx="900" cy="600" r="150" opacity="0.2"/></svg>');
+            background-size: cover;
+            background-position: center;
+            height: 60vh;
+            display: flex;
+            align-items: center;
+            color: white;
+            text-align: center;
+            margin-top: 100px;
+        }
+
+        .food-card {
+            border: none;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            margin-bottom: 30px;
+        }
+
+        .food-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .food-card img {
+            height: 200px;
+            object-fit: cover;
+            width: 100%;
+        }
+
+        .btn-kfc {
+            background: linear-gradient(45deg, var(--kfc-red), var(--kfc-orange));
+            border: none;
+            color: white;
+            padding: 10px 25px;
+            border-radius: 25px;
+            transition: all 0.3s ease;
+        }
+
+        .btn-kfc:hover {
+            background: linear-gradient(45deg, var(--kfc-dark-red), var(--kfc-red));
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .cart-badge {
+            background-color: var(--kfc-orange);
+            color: white;
+            border-radius: 50%;
+            padding: 2px 6px;
+            font-size: 12px;
+            position: absolute;
+            top: -5px;
+            right: -5px;
+        }
+
+        .rating {
+            color: #ffc107;
+        }
+
+        .modal-header {
+            background: linear-gradient(135deg, var(--kfc-red), var(--kfc-dark-red));
+            color: white;
+        }
+
+        .form-control:focus {
+            border-color: var(--kfc-red);
+            box-shadow: 0 0 0 0.2rem rgba(228, 0, 43, 0.25);
+        }
+
+        .order-summary {
+            background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        .section-title {
+            color: var(--kfc-red);
+            border-bottom: 3px solid var(--kfc-orange);
+            padding-bottom: 10px;
+            margin-bottom: 30px;
+        }
+
+        .loading-spinner {
+            display: none;
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .user-stats {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+
+        .stats-card {
+            text-align: center;
+            padding: 15px;
+            background: linear-gradient(135deg, var(--kfc-red), var(--kfc-orange));
+            color: white;
+            border-radius: 10px;
+            margin: 10px 0;
+        }
+
+        #loginSection,
+        #registerSection,
+        #menuSection,
+        #cartSection,
+        #ordersSection,
+        #profileSection {
+            display: none;
+        }
+
+        #homeSection {
+            display: block;
+        }
+
+
+        /* Validation styles */
+        .validation-error {
+            border-color: #dc3545;
+            padding-right: calc(1.5em + 0.75rem);
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='none' stroke='%23dc3545' viewBox='0 0 12 12'%3e%3ccircle cx='6' cy='6' r='4.5'/%3e%3cpath stroke-linejoin='round' d='M5.8 3.6h.4L6 6.5z'/%3e%3ccircle cx='6' cy='8.2' r='.6' fill='%23dc3545' stroke='none'/%3e%3c/svg%3e");
+            background-repeat: no-repeat;
+            background-position: right calc(0.375em + 0.1875rem) center;
+            background-size: calc(0.75em + 0.375rem) calc(0.75em + 0.375rem);
+        }
+
+        .validation-success {
+            border-color: #28a745;
+            padding-right: calc(1.5em + 0.75rem);
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8' viewBox='0 0 8 8'%3e%3cpath fill='%2328a745' d='M2.3 6.73L.6 4.53c-.4-1.04.46-1.4 1.1-.8l1.1 1.4 3.4-3.8c.6-.63 1.6-.27 1.2.7l-4 4.6c-.43.5-.8.4-1.1.1z'/%3e%3c/svg%3e");
+            background-repeat: no-repeat;
+            background-position: right calc(0.375em + 0.1875rem) center;
+            background-size: calc(0.75em + 0.375rem) calc(0.75em + 0.375rem);
+        }
+
+        .password-strength {
+            height: 5px;
+            width: 100%;
+            margin-top: 5px;
+            background: #e9ecef;
+            border-radius: 3px;
+            overflow: hidden;
+        }
+
+        .password-strength-meter {
+            height: 100%;
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        .password-requirements {
+            font-size: 0.8rem;
+            margin-top: 5px;
+        }
+
+        .requirement {
+            display: flex;
+            align-items: center;
+            margin-bottom: 3px;
+        }
+
+        .requirement i {
+            margin-right: 5px;
+            font-size: 0.7rem;
+        }
+
+        .requirement.valid {
+            color: #28a745;
+        }
+
+        .requirement.invalid {
+            color: #6c757d;
+        }
+
+        .error-message {
+            font-size: 0.8rem;
+            color: #dc3545;
+            margin-top: 3px;
+        }
+
+        .card-details .form-control,
+        .upi-details .form-control {
+            background-position: right 0.75rem center;
+        }
+
+        /* Order history styling */
+        .order-card {
+            border-left: 4px solid var(--kfc-red);
+            margin-bottom: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .order-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .order-status {
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .order-date {
+            font-size: 0.9rem;
+            color: #6c757d;
+        }
+
+        /* NEW: User dropdown styles */
+        .user-dropdown {
+            position: relative;
+            display: inline-block;
+           
+        }
+
+        .user-dropdown-btn {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.2rem;
+            padding: 0.5rem;
+            cursor: pointer;
+            transition: transform 0.3s;
+        }
+
+        .user-dropdown-btn:hover {
+            transform: scale(1.1);
+        }
+
+        .user-dropdown-content {
+            display: none;
+            position: absolute;
+            right: 0;
+            background-color: rgb(255, 255, 255);
+            min-width: 160px;
+            box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+            z-index: 1;
+            border-radius: 5px;
+            overflow: hidden;
+            
+        }
+
+        .user-dropdown-content.show {
+            display: block;
+        }
+
+        .user-dropdown-content a {
+            color: #333;
+            padding: 12px 16px;
+            text-decoration: none;
+            display: block;
+            transition: background-color 0.3s;
+        }
+
+        .user-dropdown-content a:hover {
+            background-color: #f1f1f1;
+            color: var(--kfc-red);
+        }
+
+        /* KFC logo styling */
+        .kfc-logo {
+            height: 50px;
+            display: flex;
+            align-items: center;
+        }
+
+        .kfc-logo-text {
+            font-family: 'Arial Black', sans-serif;
+            font-size: 24px;
+            color: white;
+            margin-left: 10px;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Mobile responsive adjustments */
+        @media (max-width: 768px) {
+            .navbar-nav {
+                flex-direction: row;
+                justify-content: space-around;
+            }
+
+            .hero-section {
+                margin-top: 70px;
+                height: 50vh;
+            }
+
+            .kfc-logo {
+                height: 40px;
+            }
+
+            .user-dropdown-content {
+                position: fixed;
+                top: 70px;
+                right: 10px;
+                left: auto;
+            }
+        }
+
+        #nav {
+            background-color: rgb(223, 16, 16);
+
+        }
+
+        #nav1 {
+            margin-right: 50px;
+            font-size: 23px;
+
+        }
+
+        /* NEW: Navigation link hover effect */
+        .navbar-nav .nav-link {
+            position: relative;
+            padding-bottom: 2px;
+            transition: all 0.3s ease;
+        }
+
+        .navbar-nav .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            width: 0;
+            height: 3px;
+            background-color: yellow;
+            transition: all 0.3s ease;
+            transform: translateX(-50%);
+        }
+
+        .navbar-nav .nav-link:hover::after,
+        .navbar-nav .nav-link.active::after {
+            width: 100%;
+        }
+
+        .navbar-nav .nav-link:hover {
+            color: #050505;
+        }
+
+        .navbar-nav .nav-link.active {
+            color: #161414;
+            font-weight: bold;
+        }
+
+        .navbar-nav .nav-link i {
+            margin-right: 5px;
+        }
+
+
+        .kfc-ad {
+            position: relative;
+            width: 100%;
+            max-width: 1600px;
+            height: 500px;
+            border-radius: 0px;
+            overflow: hidden;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5);
+            margin-top: 115px;
+            padding-bottom: 100px;
+        }
+
+        .background {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)),
+                url('https://images.unsplash.com/photo-1617196034796-73dfa7b1fd56?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1200&q=80');
+            background-size: cover;
+            background-position: center;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 40px;
+            text-align: center;
+        }
+
+        .kfc-logo {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            font-size: 32px;
+            font-weight: bold;
+            color: #FFD700;
+            text-shadow: 0 0 10px rgba(255, 215, 0, 0.7);
+            letter-spacing: 1px;
+            display: flex;
+            align-items: center;
+        }
+
+        .kfc-logo .icon {
+            margin-right: 10px;
+            font-size: 36px;
+        }
+
+        .slogan {
+            font-size: 58px;
+            font-weight: bold;
+            color: #FFD700;
+            text-shadow: 0 0 15px rgba(255, 215, 0, 0.8);
+            margin-bottom: 20px;
+            letter-spacing: 1px;
+            animation: pulse 2s infinite;
+            line-height: 1.1;
+            max-width: 800px;
+        }
+
+        .description {
+            font-size: 26px;
+            color: #FFFFFF;
+            margin-bottom: 30px;
+            max-width: 700px;
+            line-height: 1.5;
+            text-shadow: 0 0 10px rgba(0, 0, 0, 0.8);
+            font-weight: 500;
+        }
+
+        .order-button {
+            background: linear-gradient(to right, #8B0000, #FF0000);
+            color: white;
+            border: none;
+            padding: 18px 60px;
+            font-size: 24px;
+            font-weight: bold;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
+        }
+
+        .order-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(to right, #FF0000, #8B0000);
+            transition: all 0.6s ease;
+            z-index: -1;
+        }
+
+        .order-button:hover::before {
+            left: 0;
+        }
+
+        .order-button:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+        }
+
+        .buckets {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            display: flex;
+            gap: 15px;
+        }
+
+        .bucket {
+            width: 60px;
+            height: 60px;
+            background: #FFD700;
+            border-radius: 50%;
+            position: relative;
+            animation: float 4s infinite ease-in-out;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .bucket:nth-child(1) {
+            animation-delay: 0s;
+        }
+
+        .bucket:nth-child(2) {
+            animation-delay: 0.5s;
+        }
+
+        .bucket:nth-child(3) {
+            animation-delay: 1s;
+        }
+
+        .bucket::before {
+            content: "";
+            position: absolute;
+            top: -10px;
+            left: 10px;
+            width: 40px;
+            height: 12px;
+            background: #8B0000;
+            border-radius: 5px;
+        }
+
+        .bucket::after {
+            content: "KFC";
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: #8B0000;
+            font-weight: bold;
+            font-size: 10px;
+            letter-spacing: 0.5px;
+        }
+
+        .stripes {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: repeating-linear-gradient(45deg,
+                    rgba(139, 0, 0, 0.1),
+                    rgba(139, 0, 0, 0.1) 10px,
+                    rgba(255, 215, 0, 0.1) 10px,
+                    rgba(255, 215, 0, 0.1) 20px);
+            pointer-events: none;
+        }
+
+        .floating-chicken {
+            position: absolute;
+            font-size: 36px;
+            animation: float 6s infinite ease-in-out;
+        }
+
+        .chicken-1 {
+            top: 15%;
+            left: 10%;
+            animation-delay: 0s;
+        }
+
+        .chicken-2 {
+            top: 30%;
+            right: 15%;
+            animation-delay: 1s;
+        }
+
+        .chicken-3 {
+            bottom: 25%;
+            left: 20%;
+            animation-delay: 2s;
+        }
+
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.05);
+            }
+
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        @keyframes float {
+            0% {
+                transform: translateY(0);
+            }
+
+            50% {
+                transform: translateY(-20px);
+            }
+
+            100% {
+                transform: translateY(0);
+            }
+        }
+
+        @media (max-width: 850px) {
+            .kfc-ad {
+                height: 450px;
+            }
+
+            .slogan {
+                font-size: 42px;
+            }
+
+            .description {
+                font-size: 20px;
+            }
+
+            .order-button {
+                padding: 15px 40px;
+                font-size: 20px;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .kfc-ad {
+                height: 400px;
+            }
+
+            .slogan {
+                font-size: 32px;
+            }
+
+            .description {
+                font-size: 18px;
+            }
+
+            .order-button {
+                padding: 12px 35px;
+                font-size: 18px;
+            }
+
+            .kfc-logo {
+                font-size: 26px;
+            }
+
+            .bucket {
+                width: 45px;
+                height: 45px;
+            }
+        }
+
+        #user {
+
+            margin-top: -15px;
+            margin-left: 20px;
+            width: 55px;
+            height: 55px;
+            background-color: rgb(0, 0, 0);
+            border-radius: 60%;
+        }
+
+        .footer {
+            /* background: linear-gradient(135deg, #d32323 0%, #b01f1f 100%); */
+            color: white;
+            padding: 40px 0 20px;
+            background-color: black;
+        }
+
+        .footer-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .footer-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr 1fr;
+            gap: 40px;
+            margin-bottom: 40px;
+        }
+
+        .footer-section h3 {
+            color: #ffd700;
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        .footer-section h3::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 50px;
+            height: 2px;
+            background-color: #ffd700;
+        }
+
+        .brand-section {
+            grid-column: 1;
+        }
+
+        .brand-logo {
+            width: 80px;
+            height: 80px;
+            /* background-color: rgb(1, 1, 1);
+            border-radius: 50%; */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
+            font-weight: bold;
+            color: #d32323;
+            font-size: 24px;
+        }
+
+        .brand-description {
+            font-size: 16px;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+
+        .social-icons {
+            display: flex;
+            gap: 15px;
+        }
+
+        .social-icon {
+            width: 40px;
+            height: 40px;
+            background-color: rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .social-icon:hover {
+            background-color: #ffd700;
+            color: #d32323;
+            transform: translateY(-3px);
+        }
+
+        .quick-links ul {
+            list-style: none;
+        }
+
+        .quick-links li {
+            margin-bottom: 12px;
+        }
+
+        .quick-links a {
+            color: white;
+            text-decoration: none;
+            font-size: 16px;
+            transition: color 0.3s ease;
+        }
+
+        .quick-links a:hover {
+            color: #ffd700;
+        }
+
+        .contact-info {
+            font-size: 16px;
+        }
+
+        .contact-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .contact-icon {
+            width: 20px;
+            height: 20px;
+            background-color: #ffd700;
+            border-radius: 50%;
+            margin-right: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #d32323;
+            font-weight: bold;
+        }
+
+        .newsletter-section p {
+            margin-bottom: 20px;
+            font-size: 16px;
+            line-height: 1.5;
+        }
+
+        .newsletter-form {
+            display: flex;
+            margin-bottom: 25px;
+        }
+
+        .newsletter-input {
+            flex: 1;
+            padding: 12px 15px;
+            border: none;
+            border-radius: 25px 0 0 25px;
+            font-size: 16px;
+            outline: none;
+        }
+
+        .newsletter-btn {
+            background-color: #ffd700;
+            color: #d32323;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 0 25px 25px 0;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+
+        .newsletter-btn:hover {
+            background-color: #ffed4e;
+            transform: scale(1.05);
+        }
+
+        .app-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .app-btn {
+            background-color: white;
+            color: #333;
+            padding: 10px 15px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .app-btn:hover {
+            background-color: #ffd700;
+            transform: translateY(-2px);
+        }
+
+        .footer-bottom {
+            border-top: 1px solid rgba(255, 255, 255, 0.2);
+            padding-top: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .copyright {
+            font-size: 14px;
+        }
+
+        .payment-methods {
+            display: flex;
+            gap: 10px;
+        }
+
+        .payment-card {
+            width: 50px;
+            height: 30px;
+            background-color: white;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            color: #333;
+            font-weight: bold;
+        }
+
+        @media (max-width: 768px) {
+            .footer-content {
+                grid-template-columns: 1fr;
+                gap: 30px;
+                text-align: center;
+            }
+
+            .footer-bottom {
+                flex-direction: column;
+                gap: 15px;
+                text-align: center;
+            }
+
+            .newsletter-form {
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .newsletter-input,
+            .newsletter-btn {
+                border-radius: 25px;
+            }
+
+            .app-buttons {
+                justify-content: center;
+            }
+        }
+
+        .blinking-title {
+            animation: colorBlink 2s infinite;
+        }
+        
+        @keyframes colorBlink {
+            0% {
+                color: #ff0000; /* Red */
+            }
+            16.66% {
+                color: #ff8800; /* Orange */
+            }
+            33.33% {
+                color: #000000; /* Yellow */
+            }
+            50% {
+                color: #00ff00; /* Green */
+            }
+            66.66% {
+                color: #0088ff; /* Blue */
+            }
+            83.33% {
+                color: #8800ff; /* Purple */
+            }
+            100% {
+                color: #ff0088; /* Pink */
+            }
+        }
+
+        .search-container {
+            position: relative;
+            margin-left: 20px;
+            margin-right: 20px;
+            flex-grow: 1;
+            max-width: 500px;
+        }
+        
+        .search-container .search-input {
+            width: 100%;
+            padding: 10px 15px;
+            padding-right: 40px;
+            border-radius: 30px;
+            border: 2px solid #ffc107;
+            background-color: rgba(255, 255, 255, 0.9);
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        
+        .search-container .search-input:focus {
+            outline: none;
+            border-color: var(--kfc-orange);
+            box-shadow: 0 0 0 0.2rem rgba(255, 105, 0, 0.25);
+        }
+        
+        .search-container .search-btn {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: var(--kfc-red);
+            font-size: 18px;
+            cursor: pointer;
+        }
+        
+        .search-results-container {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: white;
+            border-radius: 0 0 10px 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            z-index: 1000;
+            max-height: 400px;
+            overflow-y: auto;
+            display: none;
+        }
+        
+        .search-result-item {
+            padding: 10px 15px;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        
+        .search-result-item:hover {
+            background-color: #fff8e6;
+        }
+        
+        .search-result-item img {
+            width: 50px;
+            height: 50px;
+            border-radius: 5px;
+            object-fit: cover;
+            margin-right: 15px;
+        }
+        
+        .search-result-info {
+            flex-grow: 1;
+        }
+        
+        .search-result-info h6 {
+            margin-bottom: 3px;
+            color: #333;
+        }
+        
+        .search-result-info p {
+            font-size: 12px;
+            color: #666;
+            margin-bottom: 0;
+        }
+        
+        .search-result-price {
+            color: var(--kfc-red);
+            font-weight: bold;
+            font-size: 14px;
+            min-width: 60px;
+            text-align: right;
+        }
+        
+        .no-results {
+            padding: 15px;
+            text-align: center;
+            color: #666;
+        }
+        
+        /* Responsive adjustments */
+        @media (max-width: 992px) {
+            .search-container {
+                order: 3;
+                width: 100%;
+                max-width: none;
+                margin: 10px 0 0 0;
+            }
+            
+            .navbar .container {
+                flex-wrap: wrap;
+            }
+            
+            .navbar-brand {
+                margin-left: 0;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .search-container {
+                margin-top: 15px;
+            }
+        }
+        
+        /* ================ RESPONSIVE ENHANCEMENTS ================ */
+        
+        /* Navigation improvements */
+        @media (max-width: 992px) {
+            .navbar-nav {
+                flex-wrap: wrap;
+            }
+            
+            .navbar-nav .nav-link {
+                padding: 10px 15px;
+                font-size: 18px;
+            }
+            
+            .user-dropdown {
+                margin-left: auto;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .navbar-brand img {
+                height: 60px;
+                margin-left: 0;
+            }
+            
+            .kfc-ad {
+                margin-top: 80px;
+            }
+            
+            #nav1 {
+                margin-right: 0;
+                font-size: 18px;
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+            
+            .navbar-nav .nav-link {
+                font-size: 16px;
+                padding: 8px 12px;
+            }
+            
+            #user {
+                width: 45px;
+                height: 45px;
+                margin-left: 10px;
+            }
+        }
+        
+        @media (max-width: 576px) {
+            .navbar-brand img {
+                height: 50px;
+            }
+            
+            .navbar-nav .nav-link {
+                font-size: 14px;
+                padding: 6px 8px;
+            }
+            
+            #user {
+                width: 40px;
+                height: 40px;
+            }
+            
+            .kfc-ad {
+                margin-top: 70px;
+            }
+        }
+        
+        /* Hero section improvements */
+        @media (max-width: 992px) {
+            .slogan {
+                font-size: 46px;
+            }
+            
+            .description {
+                font-size: 22px;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .slogan {
+                font-size: 36px;
+                margin-top: 30px;
+            }
+            
+            .description {
+                font-size: 18px;
+            }
+            
+            .order-button {
+                padding: 14px 40px;
+                font-size: 18px;
+            }
+            
+            .buckets {
+                display: none;
+            }
+            
+            .floating-chicken {
+                font-size: 28px;
+            }
+        }
+        
+        @media (max-width: 576px) {
+            .slogan {
+                font-size: 28px;
+                margin-top: 50px;
+            }
+            
+            .description {
+                font-size: 16px;
+                margin-bottom: 20px;
+            }
+            
+            .order-button {
+                padding: 12px 30px;
+                font-size: 16px;
+            }
+            
+            .kfc-logo {
+                font-size: 24px;
+            }
+        }
+        
+        /* Menu section improvements */
+        .menu-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 25px;
+        }
+        
+        @media (max-width: 1200px) {
+            .menu-grid {
+                grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .menu-grid {
+                grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+                gap: 15px;
+            }
+            
+            .food-card img {
+                height: 180px;
+            }
+        }
+        
+        @media (max-width: 576px) {
+            .menu-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .btn-group {
+                flex-wrap: wrap;
+            }
+            
+            .btn-group .btn {
+                margin-bottom: 5px;
+            }
+        }
+        
+        /* Cart section improvements */
+        @media (max-width: 768px) {
+            .cart-item-image {
+                max-height: 150px;
+                object-fit: cover;
+            }
+            
+            .order-summary {
+                margin-top: 30px;
+            }
+        }
+        
+        /* Footer improvements */
+        @media (max-width: 992px) {
+            .footer-section {
+                text-align: center;
+            }
+            
+            .contact-item {
+                justify-content: center;
+            }
+            
+            .social-icons {
+                justify-content: center;
+            }
+        }
+        
+        /* Form improvements */
+        @media (max-width: 768px) {
+            .modal-dialog {
+                margin: 10px;
+            }
+            
+            .form-row {
+                flex-direction: column;
+            }
+            
+            .form-row > div {
+                width: 100%;
+                margin-bottom: 15px;
+            }
+        }
+        
+        /* General responsive adjustments */
+        .container {
+            padding-left: 15px;
+            padding-right: 15px;
+        }
+        
+        section {
+            padding: 30px 0;
+        }
+        
+        @media (max-width: 768px) {
+            section {
+                padding: 20px 0;
+            }
+            
+            .section-title {
+                font-size: 24px;
+            }
+        }
+        #our{
+            margin-top: 50px;
+        }
+      
+       
+    </style>
+</head>
+
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark kfc-navbar fixed-top" id="nav">
+        <div class="container">
+            <!-- KFC Logo -->
+            <a class="navbar-brand" href="#" onclick="showSection('home')">
+                <img src="https://upload.wikimedia.org/wikipedia/sco/thumb/b/bf/KFC_logo.svg/1200px-KFC_logo.svg.png" />
+            </a>
+
+            <!-- NEW: Search Bar -->
+            <div class="search-container">
+                <input type="text" class="search-input" id="searchInput" placeholder="Search menu items...">
+                <button class="search-btn" id="searchButton">
+                    <i class="fas fa-search"></i>
+                </button>
+                <div class="search-results-container" id="searchResults">
+                    <!-- Search results will appear here -->
+                </div>
+            </div>
+
+            <div class="navbar-nav ml-auto" id="nav1">
+                <a class="nav-link" href="#" onclick="showSection('home')" style="color: black; font-weight: bold;">Home</a>
+                 <a class="nav-link" href="About.html"  style="color: black; font-weight: bold;">About</a>
+                <a class="nav-link" href="#" onclick="showSection('menu')" style="color: black; font-weight: bold;"> Menu</a>
+                <a class="nav-link" href="Deals.html"  style="color: black; font-weight: bold;">Deals</a>
+                <a class="nav-link position-relative" href="#" onclick="showSection('cart')"
+                    style="color: black; font-weight: bold;">
+                    <i class="fas fa-shopping-cart"></i>Cart
+                    <span id="cartCount" class="cart-badge">0</span>
+                </a>
+                
+
+                <!-- User Icon with Dropdown -->
+                <div class="user-dropdown">
+                    <button class="user-dropdown-btn" id="user" onclick="toggleUserDropdown()">
+                        <i class="fas fa-user"></i>
+                    </button>
+                    <div class="user-dropdown-content" id="userDropdown">
+                        <a href="#" onclick="showSection('login')"><i class="fas fa-sign-in-alt"></i> Login</a>
+                        <a href="#" onclick="showSection('register')"><i class="fas fa-user-plus"></i> Register</a>
+                        <div id="userMenu" style="display: none;">
+                            <a href="#" onclick="showSection('orders')"><i class="fas fa-receipt"></i> Orders</a>
+                            <a href="#" onclick="showSection('profile')"><i class="fas fa-user"></i> Profile</a>
+                            <div class="dropdown-divider"></div>
+                            <a href="#" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Logout</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- <img src="Adobe Express - file.png" height="90px;" width="100px"/> -->
+    </nav>
+
+    <!-- Home Section -->
+    <div id="homeSection">
+        <div class="kfc-ad">
+            <div class="background">
+                <div class="kfc-logo">
+                    <i class="fas fa-drumstick-bite icon"></i>
+                    KFC
+                </div>
+                <div class="slogan">It's Finger Lickin' Good!</div>
+                <div class="description">Experience the original recipe with 11 herbs and spices</div>
+                <button class="order-button" id="orderNowButton">Order Now</button>
+                <div class="buckets">
+                    <div class="bucket"></div>
+                    <div class="bucket"></div>
+                    <div class="bucket"></div>
+                </div>
+                <div class="stripes"></div>
+                <div class="floating-chicken chicken-1">🍗</div>
+                <div class="floating-chicken chicken-2">🍗</div>
+                <div class="floating-chicken chicken-3">🍗</div>
+            </div>
+        </div>
+
+        <div class="container mt-5">
+            <h2 class="text-center section-title  blinking-title" style="color: black; font-weight: bold; font-size: 43px;">Featured Items</h2>
+            <div class="row" id="featuredItems">
+                <!-- Featured items will be loaded here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Login Section -->
+    <div id="loginSection" class="container mt-5 pt-5">
+        <div class="row justify-content-center">
+            <div class="col-md-6">
+                <div class="card shadow">
+                    <div class="modal-header">
+                        <h4 class="modal-title w-100 text-center">Login to KFC</h4>
+                    </div>
+                    <div class="card-body">
+                        <form id="loginForm" >
+                            <div class="form-group">
+                                <label>Email</label>
+                                <input type="email" class="form-control" id="loginEmail" required>
+                                <div class="error-message" id="loginEmailError"></div>
+                            </div>
+                            <div class="form-group">
+                                <label>Password</label>
+                                <input type="password" class="form-control" id="loginPassword" required>
+                                <div class="error-message" id="loginPasswordError"></div>
+                            </div>
+                            <button type="submit" class="btn btn-kfc btn-block">Login</button>
+                        </form>
+                        <div class="text-center mt-3">
+                            <p>Don't have an account? <a href="#" onclick="showSection('register')"
+                                    class="text-danger">Register here</a></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Register Section -->
+    <div id="registerSection" class="container mt-5 pt-5">
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="card shadow">
+                    <div class="modal-header">
+                        <h4 class="modal-title w-100 text-center">Register with KFC</h4>
+                    </div>
+                    <div class="card-body">
+                        <form id="registerForm">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label>First Name</label>
+                                        <input type="text" class="form-control" id="firstName" required>
+                                        <div class="error-message" id="firstNameError"></div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label>Last Name</label>
+                                        <input type="text" class="form-control" id="lastName" required>
+                                        <div class="error-message" id="lastNameError"></div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label>Email</label>
+                                <input type="email" class="form-control" id="registerEmail" required>
+                                <div class="error-message" id="registerEmailError"></div>
+                            </div>
+                            <div class="form-group">
+                                <label>Phone</label>
+                                <input type="tel" class="form-control" id="phone" required>
+                                <div class="error-message" id="phoneError"></div>
+                            </div>
+                            <div class="form-group">
+                                <label>Password</label>
+                                <input type="password" class="form-control" id="registerPassword" required>
+                                <div class="password-strength">
+                                    <div class="password-strength-meter" id="passwordStrength"></div>
+                                </div>
+                                <div class="password-requirements">
+                                    <div class="requirement invalid" id="reqLength">
+                                        <i class="fas fa-circle"></i>
+                                        <span>At least 8 characters</span>
+                                    </div>
+                                    <div class="requirement invalid" id="reqUppercase">
+                                        <i class="fas fa-circle"></i>
+                                        <span>At least one uppercase letter</span>
+                                    </div>
+                                    <div class="requirement invalid" id="reqLowercase">
+                                        <i class="fas fa-circle"></i>
+                                        <span>At least one lowercase letter</span>
+                                    </div>
+                                    <div class="requirement invalid" id="reqNumber">
+                                        <i class="fas fa-circle"></i>
+                                        <span>At least one number</span>
+                                    </div>
+                                    <div class="requirement invalid" id="reqSpecial">
+                                        <i class="fas fa-circle"></i>
+                                        <span>At least one special character</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label>Confirm Password</label>
+                                <input type="password" class="form-control" id="confirmPassword" required>
+                                <div class="error-message" id="confirmPasswordError"></div>
+                            </div>
+                            <div class="form-group">
+                                <label>Address</label>
+                                <textarea class="form-control" id="address" rows="3" required></textarea>
+                                <div class="error-message" id="addressError"></div>
+                            </div>
+                            <button type="submit" class="btn btn-kfc btn-block">Register</button>
+                        </form>
+                        <div class="text-center mt-3">
+                            <p>Already have an account? <a href="#" onclick="showSection('login')"
+                                    class="text-danger">Login here</a></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Menu Section -->
+    <div id="menuSection" class="container mt-5 pt-5">
+        <h2 class="text-center section-title" id="our">Our Menu</h2>
+        <div class="row mb-4">
+            <div class="col-12 text-center">
+                <div class="btn-group" role="group">
+                    <button class="btn btn-outline-danger active" onclick="filterMenu('all')">All Items</button>
+                    <button class="btn btn-outline-danger" onclick="filterMenu('chicken')">Chicken</button>
+                    <button class="btn btn-outline-danger" onclick="filterMenu('burgers')">Burgers</button>
+                    <button class="btn btn-outline-danger" onclick="filterMenu('sides')">Sides</button>
+                    <button class="btn btn-outline-danger" onclick="filterMenu('desserts')">Desserts</button>
+                </div>
+            </div>
+        </div>
+        <div class="loading-spinner" id="menuLoading">
+            <i class="fas fa-spinner fa-spin fa-2x text-danger"></i>
+            <p>Loading delicious food...</p>
+        </div>
+        <div class="row" id="menuItems">
+            <!-- Menu items will be loaded here -->
+        </div>
+    </div>
+
+    <!-- Cart Section -->
+    <div id="cartSection" class="container mt-5 pt-5">
+        <h2 class="text-center section-title">Your Cart</h2>
+        <div class="row">
+            <div class="col-md-8">
+                <div id="cartItems">
+                    <!-- Cart items will be displayed here -->
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="order-summary">
+                    <h4>Order Summary</h4>
+                    <div class="d-flex justify-content-between">
+                        <span>Subtotal:</span>
+                        <span id="subtotal">₹0.00</span>
+                    </div>
+                    <div class="d-flex justify-content-between">
+                        <span>Tax (5%):</span>
+                        <span id="tax">₹0.00</span>
+                    </div>
+                    <div class="d-flex justify-content-between">
+                        <span>Delivery:</span>
+                        <span id="delivery">₹40.00</span>
+                    </div>
+                    <hr>
+                    <div class="d-flex justify-content-between font-weight-bold">
+                        <span>Total:</span>
+                        <span id="total">₹0.00</span>
+                    </div>
+                    <button class="btn btn-kfc btn-block mt-3" onclick="proceedToCheckout()" id="checkoutBtn" disabled>
+                        Proceed to Checkout
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Orders Section -->
+    <div id="ordersSection" class="container mt-5 pt-5">
+        <h2 class="text-center section-title">My Orders</h2>
+        <div class="loading-spinner" id="ordersLoading">
+            <i class="fas fa-spinner fa-spin fa-2x text-danger"></i>
+            <p>Loading your orders...</p>
+        </div>
+        <div id="ordersList">
+            <!-- Orders will be displayed here -->
+        </div>
+    </div>
+
+    <!-- Profile Section -->
+    <div id="profileSection" class="container mt-5 pt-5">
+        <h2 class="text-center section-title">My Profile</h2>
+        <div class="row">
+            <div class="col-md-4">
+                <div class="user-stats">
+                    <h4 class="text-center mb-3">My Stats</h4>
+                    <div class="stats-card">
+                        <h3 id="totalOrders">0</h3>
+                        <p>Total Orders</p>
+                    </div>
+                    <div class="stats-card">
+                        <h3 id="totalSpent">₹0</h3>
+                        <p>Total Spent</p>
+                    </div>
+                    <div class="stats-card">
+                        <h3 id="avgRating">0.0</h3>
+                        <p>Average Rating Given</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-8">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Profile Information</h5>
+                        <form id="profileForm">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label>First Name</label>
+                                        <input type="text" class="form-control" id="profileFirstName">
+                                        <div class="error-message" id="profileFirstNameError"></div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label>Last Name</label>
+                                        <input type="text" class="form-control" id="profileLastName">
+                                        <div class="error-message" id="profileLastNameError"></div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label>Email</label>
+                                <input type="email" class="form-control" id="profileEmail" readonly>
+                            </div>
+                            <div class="form-group">
+                                <label>Phone</label>
+                                <input type="tel" class="form-control" id="profilePhone">
+                                <div class="error-message" id="profilePhoneError"></div>
+                            </div>
+                            <div class="form-group">
+                                <label>Address</label>
+                                <textarea class="form-control" id="profileAddress" rows="3"></textarea>
+                                <div class="error-message" id="profileAddressError"></div>
+                            </div>
+                            <button type="submit" class="btn btn-kfc">Update Profile</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Rating Modal -->
+    <div class="modal fade" id="ratingModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Rate Your Order</h5>
+                    <button type="button" class="close" data-dismiss="modal">
+                        <span>&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form id="ratingForm">
+                        <input type="hidden" id="ratingOrderId">
+                        <div class="form-group text-center">
+                            <label>How was your experience?</label>
+                            <div class="rating-stars mt-2">
+                                <i class="fas fa-star" data-rating="1"></i>
+                                <i class="fas fa-star" data-rating="2"></i>
+                                <i class="fas fa-star" data-rating="3"></i>
+                                <i class="fas fa-star" data-rating="4"></i>
+                                <i class="fas fa-star" data-rating="5"></i>
+                            </div>
+                            <input type="hidden" id="selectedRating" value="0">
+                            <div class="error-message text-center mt-2" id="ratingError"></div>
+                        </div>
+                        <div class="form-group">
+                            <label>Comments (Optional)</label>
+                            <textarea class="form-control" id="ratingComments" rows="3"></textarea>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-kfc" onclick="submitRating()">Submit Rating</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Payment Modal -->
+    <div class="modal fade" id="paymentModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Payment</h5>
+                    <button type="button" class="close" data-dismiss="modal">
+                        <span>&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h6>Order Summary</h6>
+                            <div id="paymentOrderSummary"></div>
+                        </div>
+                        <div class="col-md-6">
+                            <h6>Payment Method</h6>
+                            <div class="form-group">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="paymentMethod" id="cod"
+                                        value="cod" checked>
+                                    <label class="form-check-label" for="cod">Cash on Delivery</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="paymentMethod" id="card"
+                                        value="card">
+                                    <label class="form-check-label" for="card">Credit/Debit Card</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="paymentMethod" id="upi"
+                                        value="upi">
+                                    <label class="form-check-label" for="upi">UPI</label>
+                                </div>
+                            </div>
+                            <div id="cardDetails" class="card-details" style="display: none;">
+                                <div class="form-group">
+                                    <label>Card Number</label>
+                                    <input type="text" class="form-control" id="cardNumber"
+                                        placeholder="1234 5678 9012 3456">
+                                    <div class="error-message" id="cardNumberError"></div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-6">
+                                        <div class="form-group">
+                                            <label>Expiry</label>
+                                            <input type="text" class="form-control" id="cardExpiry" placeholder="MM/YY">
+                                            <div class="error-message" id="cardExpiryError"></div>
+                                        </div>
+                                    </div>
+                                    <div class="col-6">
+                                        <div class="form-group">
+                                            <label>CVV</label>
+                                            <input type="text" class="form-control" id="cardCvv" placeholder="123">
+                                            <div class="error-message" id="cardCvvError"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div id="upiDetails" class="upi-details" style="display: none;">
+                                <div class="form-group">
+                                    <label>UPI ID</label>
+                                    <input type="text" class="form-control" id="upiId" placeholder="user@paytm">
+                                    <div class="error-message" id="upiIdError"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-kfc" onclick="processPayment()">Place Order</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <div class="footer-container">
+            <div class="footer-content">
+                <!-- Brand Section -->
+                <div class="footer-section brand-section">
+                    <div class="brand-logo"> <img
+                            src="https://upload.wikimedia.org/wikipedia/sco/thumb/b/bf/KFC_logo.svg/1200px-KFC_logo.svg.png"
+                            height="78px;" /></div>
+                    <p class="brand-description">
+                        Experience the taste of our world-famous chicken, prepared fresh throughout the day with our
+                        secret recipe of 11 herbs and spices.
+                    </p>
+                    <div class="social-icons">
+                        <a href="https://facebook.com" target="_blank" class="social-icon">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                                <path
+                                    d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
+                            </svg>
+                        </a>
+                        <a href="https://twitter.com" target="_blank" class="social-icon">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                                <path
+                                    d="M23.953 4.57a10 10 0 01-2.825.775 4.958 4.958 0 002.163-2.723c-.951.555-2.005.959-3.127 1.184a4.92 4.92 0 00-8.384 4.482C7.69 8.095 4.067 6.13 1.64 3.162a4.822 4.822 0 00-.666 2.475c0 1.71.87 3.213 2.188 4.096a4.904 4.904 0 01-2.228-.616v.06a4.923 4.923 0 003.946 4.827 4.996 4.996 0 01-2.212.085 4.936 4.936 0 004.604 3.417 9.867 9.867 0 01-6.102 2.105c-.39 0-.779-.023-1.17-.067a13.995 13.995 0 007.557 2.209c9.053 0 13.998-7.496 13.998-13.985 0-.21 0-.42-.015-.63A9.935 9.935 0 0024 4.59z" />
+                            </svg>
+                        </a>
+                        <a href="https://instagram.com" target="_blank" class="social-icon">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                                <path
+                                    d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z" />
+                            </svg>
+                        </a>
+                        <a href="https://youtube.com" target="_blank" class="social-icon">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                                <path
+                                    d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z" />
+                            </svg>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Quick Links -->
+                <div class="footer-section quick-links">
+                    <h3>Quick Links</h3>
+                    <ul>
+                        <li><a href="#home">Home</a></li>
+                        <li><a href="#menu">Menu</a></li>
+                        <li><a href="#deals">Deals & Promotions</a></li>
+                        <li><a href="#find">Find a KFC</a></li>
+                        <li><a href="#about">About Us</a></li>
+                        <li><a href="#careers">Careers</a></li>
+                    </ul>
+                </div>
+
+                <!-- Contact Us -->
+                <div class="footer-section contact-section">
+                    <h3>Contact Us</h3>
+                    <div class="contact-info">
+                        <div class="contact-item">
+                            <div class="contact-icon">📍</div>
+                            <div>
+                                1441 Gardiner Lane,<br>
+                                Louisville, KY
+                            </div>
+                        </div>
+                        <div class="contact-item">
+                            <div class="contact-icon">📞</div>
+                            <div>+1 (800) 225-5532</div>
+                        </div>
+                        <div class="contact-item">
+                            <div class="contact-icon">📧</div>
+                            <div>support@kfc.com</div>
+                        </div>
+                        <div class="contact-item">
+                            <div class="contact-icon">🕒</div>
+                            <div>
+                                Mon-Sun: 10:00 AM<br>
+                                - 11:00 PM
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Newsletter -->
+                <div class="footer-section newsletter-section">
+                    <h3>Newsletter</h3>
+                    <p>Subscribe to our newsletter for exclusive deals and updates</p>
+                    <form class="newsletter-form">
+                        <input type="email" class="newsletter-input" placeholder="Your Email" required>
+                        <button type="submit" class="newsletter-btn">➤</button>
+                    </form>
+                    <h3>Download App</h3>
+                    <div class="app-buttons">
+                        <a href="#" class="app-btn">
+                            🍎 App Store
+                        </a>
+                        <a href="#" class="app-btn">
+                            ▶️ Play Store
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="footer-bottom">
+                <div class="copyright">
+                    © 2023 KFC Corporation. All Rights Reserved.
+                </div>
+                <div class="payment-methods">
+                    <div class="payment-card">VISA</div>
+                    <div class="payment-card">MC</div>
+                    <div class="payment-card">AMEX</div>
+                    <div class="payment-card">DISC</div>
+                    <div class="payment-card">PP</div>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/4.6.2/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+
+    <script>
+        // Global variables
+        let currentUser = null;
+        let cart = [];
+        let menuItems = [];
+        let orders = [];
+
+        // Sample menu data (in real app, this would come from database)
+       const sampleMenuItems = [
+    // Original 8 items (updated with proper images)
+    {
+        id: 1,
+        name: "Original Recipe Chicken",
+        category: "chicken",
+        price: 299,
+        image: "https://images.pexels.com/photos/6210747/pexels-photo-6210747.jpeg",
+        description: "Signature fried chicken with 11 herbs and spices",
+        rating: 4.5
+    },
+    {
+        id: 2,
+        name: "Zinger Burger",
+        category: "burgers",
+        price: 199,
+        image: "https://images.pexels.com/photos/1633578/pexels-photo-1633578.jpeg",
+        description: "Spicy chicken fillet with lettuce and mayo",
+        rating: 4.3
+    },
+    {
+        id: 3,
+        name: "Popcorn Chicken",
+        category: "chicken",
+        price: 149,
+        image: "pop-corn.png",
+        description: "Bite-sized pieces of tender chicken",
+        rating: 4.2
+    },
+    {
+        id: 4,
+        name: "French Fries",
+        category: "sides",
+        price: 99,
+        image: "https://images.pexels.com/photos/1583884/pexels-photo-1583884.jpeg",
+        description: "Crispy golden french fries",
+        rating: 4.0
+    },
+    {
+        id: 5,
+        name: "Chocolate Cake",
+        category: "desserts",
+        price: 129,
+        image: "https://images.pexels.com/photos/291528/pexels-photo-291528.jpeg",
+        description: "Rich chocolate cake slice",
+        rating: 4.4
+    },
+    {
+        id: 6,
+        name: "Chicken Bucket",
+        category: "chicken",
+        price: 499,
+        image: "Chicken-Bucket.avif",
+        description: "8 pieces of signature chicken",
+        rating: 4.7
+    },
+    {
+        id: 7,
+        name: "Chicken Sandwich",
+        category: "burgers",
+        price: 179,
+        image: "https://images.pexels.com/photos/4669304/pexels-photo-4669304.jpeg",
+        description: "Crispy chicken fillet with fresh veggies",
+        rating: 4.1
+    },
+    {
+        id: 8,
+        name: "Mashed Potatoes",
+        category: "sides",
+        price: 89,
+        image: "mashed-potato.jpg",
+        description: "Creamy mashed potatoes with gravy",
+        rating: 4.3
+    },
+
+    // Additional 92 items
+    {
+        id: 9,
+        name: "Spicy Chicken Wings",
+        category: "chicken",
+        price: 249,
+        image: "72976t1.webp",
+        description: "Crispy wings coated in hot sauce Tasty",
+        rating: 4.6
+    },
+    {
+        id: 10,
+        name: "Double Cheeseburger",
+        category: "burgers",
+        price: 229,
+        image: "https://images.pexels.com/photos/1639557/pexels-photo-1639557.jpeg",
+        description: "Two beef patties with melted cheese",
+        rating: 4.7
+    },
+    {
+        id: 11,
+        name: "Onion Rings",
+        category: "sides",
+        price: 119,
+        image: "onion-rings.jpg",
+        description: "Crispy golden battered onion rings",
+        rating: 4.4
+    },
+    {
+        id: 12,
+        name: "Chocolate Milkshake",
+        category: "beverages",
+        price: 179,
+        image: "https://images.pexels.com/photos/103566/pexels-photo-103566.jpeg",
+        description: "Creamy chocolate shake with whipped cream",
+        rating: 4.8
+    },
+    {
+        id: 13,
+        name: "Grilled Chicken Wrap",
+        category: "wraps",
+        price: 199,
+        image: "https://images.pexels.com/photos/461198/pexels-photo-461198.jpeg",
+        description: "Grilled chicken strips  veggies",
+        rating: 4.2
+    },
+    {
+        id: 14,
+        name: "Apple Pie",
+        category: "desserts",
+        price: 139,
+        image: "https://images.pexels.com/photos/1123250/pexels-photo-1123250.jpeg",
+        description: "Warm apple pie with cinnamon",
+        rating: 4.9
+    },
+    {
+        id: 15,
+        name: "Coleslaw Salad",
+        category: "sides",
+        price: 89,
+        image: "https://images.pexels.com/photos/2097090/pexels-photo-2097090.jpeg",
+        description: "Fresh cabbage and carrot salad",
+        rating: 4.1
+    },
+    {
+        id: 16,
+        name: "Fish Burger",
+        category: "seafood",
+        price: 219,
+        image: "https://images.pexels.com/photos/2983101/pexels-photo-2983101.jpeg",
+        description: "Crispy fish fillet with tartar sauce",
+        rating: 4.5
+    },
+    {
+        id: 17,
+        name: "Chicken Biryani",
+        category: "meals",
+        price: 279,
+        image: "https://images.pexels.com/photos/12737656/pexels-photo-12737656.jpeg",
+        description: "Fragrant rice with chicken ",
+        rating: 4.8
+    },
+    {
+        id: 18,
+        name: "Mango Smoothie",
+        category: "beverages",
+        price: 149,
+        image: "https://images.pexels.com/photos/96974/pexels-photo-96974.jpeg",
+        description: "Refreshing mango smoothie",
+        rating: 4.6
+    },
+    {
+        id: 19,
+        name: "Cheesy Garlic Bread",
+        category: "sides",
+        price: 129,
+        image: "Cheese-Garlic.jpg",
+        description: "Toasted bread with garlic cheese",
+        rating: 4.5
+    },
+    {
+        id: 20,
+        name: "Chicken Caesar Salad",
+        category: "salads",
+        price: 229,
+        image: "https://images.pexels.com/photos/2097090/pexels-photo-2097090.jpeg",
+        description: "Fresh greens with grilled chicken",
+        rating: 4.3
+    },
+    {
+        id: 21,
+        name: "Veggie Burger",
+        category: "vegetarian",
+        price: 189,
+        image: "vegg-burger.jpg",
+        description: "Plant-based patty fresh veggies",
+        rating: 4.0
+    },
+    {
+        id: 22,
+        name: "Iced Coffee",
+        category: "beverages",
+        price: 129,
+        image: "https://images.pexels.com/photos/302899/pexels-photo-302899.jpeg",
+        description: "Chilled coffee with milk and sugar",
+        rating: 4.4
+    },
+    {
+        id: 23,
+        name: "Chicken Nuggets",
+        category: "chicken",
+        price: 169,
+        image: "KFC_Saucy_Nuggets.jpg",
+        description: "Crispy bite-sized chicken pieces",
+        rating: 4.3
+    },
+    {
+        id: 24,
+        name: "Breakfast Sandwich",
+        category: "breakfast",
+        price: 159,
+        image: "https://images.pexels.com/photos/376464/pexels-photo-376464.jpeg",
+        description: "Egg, cheese and sausage on bun",
+        rating: 4.2
+    },
+    {
+        id: 25,
+        name: "Chocolate Chip Cookies",
+        category: "desserts",
+        price: 79,
+        image: "https://images.pexels.com/photos/230325/pexels-photo-230325.jpeg",
+        description: "Freshly baked cookies with chocolate chips",
+        rating: 4.7
+    },
+    {
+        id: 26,
+        name: "Grilled Cheese Sandwich",
+        category: "sandwiches",
+        price: 139,
+        image: "https://images.pexels.com/photos/410648/pexels-photo-410648.jpeg",
+        description: "Toasted bread with melted cheese",
+        rating: 4.1
+    },
+    {
+        id: 27,
+        name: "Chicken Quesadilla",
+        category: "mexican",
+        price: 219,
+        image: "Zaxbys-Giant-Quesadilla.jpg",
+        description: "Grilled tortilla with chicken and cheese",
+        rating: 4.5
+    },
+    {
+        id: 28,
+        name: "Fruit Salad",
+        category: "sides",
+        price: 129,
+        image: "https://images.pexels.com/photos/3026808/pexels-photo-3026808.jpeg",
+        description: "Fresh seasonal fruits",
+        rating: 4.3
+    },
+    {
+        id: 29,
+        name: "Beef Burger",
+        category: "burgers",
+        price: 239,
+        image: "https://images.pexels.com/photos/1639562/pexels-photo-1639562.jpeg",
+        description: "Juicy beef patty special sauce",
+        rating: 4.6
+    },
+    {
+        id: 30,
+        name: "Fried Shrimp",
+        category: "seafood",
+        price: 299,
+        image: "https://images.pexels.com/photos/3297807/pexels-photo-3297807.jpeg",
+        description: "Crispy battered shrimp with dip",
+        rating: 4.4
+    },
+    {
+        id: 31,
+        name: "Chicken Tenders",
+        category: "chicken",
+        price: 199,
+        image: "https://images.pexels.com/photos/4021695/pexels-photo-4021695.jpeg",
+        description: "Crispy chicken strips with sauce",
+        rating: 4.5
+    },
+    {
+        id: 32,
+        name: "Vanilla Milkshake",
+        category: "beverages",
+        price: 159,
+        image: "https://images.pexels.com/photos/103566/pexels-photo-103566.jpeg",
+        description: "Creamy vanilla shake",
+        rating: 4.7
+    },
+    {
+        id: 33,
+        name: "Bacon Cheeseburger",
+        category: "burgers",
+        price: 259,
+        image: "https://images.pexels.com/photos/1633525/pexels-photo-1633525.jpeg",
+        description: "Beef patty with bacon and cheese",
+        rating: 4.8
+    },
+    {
+        id: 34,
+        name: "Vegetable Stir Fry",
+        category: "vegetarian",
+        price: 189,
+        image: "https://images.pexels.com/photos/725990/pexels-photo-725990.jpeg",
+        description: "Fresh vegetables in savory sauce",
+        rating: 4.2
+    },
+    {
+        id: 35,
+        name: "Chicken Alfredo Pasta",
+        category: "meals",
+        price: 249,
+        image: "https://images.pexels.com/photos/1279330/pexels-photo-1279330.jpeg",
+        description: "Pasta in creamy Alfredo sauce with chicken",
+        rating: 4.6
+    },
+    {
+        id: 36,
+        name: "Strawberry Sundae",
+        category: "desserts",
+        price: 139,
+        image: "https://images.pexels.com/photos/1625235/pexels-photo-1625235.jpeg",
+        description: "Vanilla ice cream with strawberry topping",
+        rating: 4.5
+    },
+    {
+        id: 37,
+        name: "Fish Tacos",
+        category: "mexican",
+        price: 229,
+        image: "https://images.pexels.com/photos/461326/pexels-photo-461326.jpeg",
+        description: "Soft tacos with grilled fish and slaw",
+        rating: 4.4
+    },
+    {
+        id: 38,
+        name: "Pancakes",
+        category: "breakfast",
+        price: 149,
+        image: "https://images.pexels.com/photos/376464/pexels-photo-376464.jpeg",
+        description: "Fluffy pancakes with maple syrup",
+        rating: 4.7
+    },
+    {
+        id: 39,
+        name: "Chicken Curry",
+        category: "meals",
+        price: 269,
+        image: "https://images.pexels.com/photos/674574/pexels-photo-674574.jpeg",
+        description: "Spicy chicken curry with rice",
+        rating: 4.8
+    },
+    {
+        id: 40,
+        name: "Lemonade",
+        category: "beverages",
+        price: 99,
+        image: "https://images.pexels.com/photos/6605201/pexels-photo-6605201.jpeg",
+        description: "Refreshing homemade lemonade",
+        rating: 4.3
+    },
+    // Items 41-60
+    {
+        id: 41,
+        name: "BBQ Chicken Pizza",
+        category: "pizza",
+        price: 299,
+        image: "https://images.pexels.com/photos/2147491/pexels-photo-2147491.jpeg",
+        description: "Pizza with BBQ sauce and chicken",
+        rating: 4.6
+    },
+    {
+        id: 42,
+        name: "Greek Salad",
+        category: "salads",
+        price: 199,
+        image: "https://images.pexels.com/photos/1211887/pexels-photo-1211887.jpeg",
+        description: "Fresh vegetables with feta cheese",
+        rating: 4.2
+    },
+    {
+        id: 43,
+        name: "Chicken Burrito",
+        category: "mexican",
+        price: 219,
+        image: "https://images.pexels.com/photos/461198/pexels-photo-461198.jpeg",
+        description: "Flour tortilla stuffed with chicken and beans",
+        rating: 4.5
+    },
+    {
+        id: 44,
+        name: "Cinnamon Rolls",
+        category: "desserts",
+        price: 129,
+        image: "https://images.pexels.com/photos/5792329/pexels-photo-5792329.jpeg",
+        description: "Freshly baked rolls with icing",
+        rating: 4.8
+    },
+    {
+        id: 45,
+        name: "Iced Tea",
+        category: "beverages",
+        price: 89,
+        image: "https://images.pexels.com/photos/6605201/pexels-photo-6605201.jpeg",
+        description: "Chilled tea with lemon",
+        rating: 4.1
+    },
+    {
+        id: 46,
+        name: "Chicken Parmesan",
+        category: "chicken",
+        price: 279,
+        image: "https://images.pexels.com/photos/5945854/pexels-photo-5945854.jpeg",
+        description: "Breaded chicken with tomato sauce and cheese",
+        rating: 4.7
+    },
+    {
+        id: 47,
+        name: "Breakfast Burrito",
+        category: "breakfast",
+        price: 179,
+        image: "https://images.pexels.com/photos/461198/pexels-photo-461198.jpeg",
+        description: "Scrambled eggs and sausage in tortilla",
+        rating: 4.4
+    },
+    {
+        id: 48,
+        name: "Mozzarella Sticks",
+        category: "sides",
+        price: 149,
+        image: "https://images.pexels.com/photos/6605213/pexels-photo-6605213.jpeg",
+        description: "Fried cheese sticks with marinara",
+        rating: 4.6
+    },
+    {
+        id: 49,
+        name: "Chicken Fajitas",
+        category: "mexican",
+        price: 289,
+        image: "https://images.pexels.com/photos/4958792/pexels-photo-4958792.jpeg",
+        description: "Sizzling chicken with peppers and onions",
+        rating: 4.7
+    },
+    {
+        id: 50,
+        name: "Fruit Smoothie",
+        category: "beverages",
+        price: 169,
+        image: "https://images.pexels.com/photos/96974/pexels-photo-96974.jpeg",
+        description: "Blended fresh fruits and yogurt",
+        rating: 4.5
+    },
+    {
+        id: 51,
+        name: "Cheesecake",
+        category: "desserts",
+        price: 159,
+        image: "https://images.pexels.com/photos/3026804/pexels-photo-3026804.jpeg",
+        description: "Creamy cheesecake with berry topping",
+        rating: 4.9
+    },
+    {
+        id: 52,
+        name: "Garden Salad",
+        category: "salads",
+        price: 149,
+        image: "https://images.pexels.com/photos/1211887/pexels-photo-1211887.jpeg",
+        description: "Fresh mixed greens with dressing",
+        rating: 4.0
+    },
+    {
+        id: 53,
+        name: "Chili Cheese Fries",
+        category: "sides",
+        price: 189,
+        image: "https://images.pexels.com/photos/1583884/pexels-photo-1583884.jpeg",
+        description: "French fries topped with chili and cheese",
+        rating: 4.6
+    },
+    {
+        id: 54,
+        name: "Margherita Pizza",
+        category: "pizza",
+        price: 249,
+        image: "https://images.pexels.com/photos/2147491/pexels-photo-2147491.jpeg",
+        description: "Classic pizza with tomato and mozzarella",
+        rating: 4.5
+    },
+    {
+        id: 55,
+        name: "Chicken Shawarma",
+        category: "wraps",
+        price: 199,
+        image: "https://images.pexels.com/photos/461198/pexels-photo-461198.jpeg",
+        description: "Spiced chicken in flatbread with garlic sauce",
+        rating: 4.7
+    },
+    {
+        id: 56,
+        name: "Hot Chocolate",
+        category: "beverages",
+        price: 119,
+        image: "https://images.pexels.com/photos/6605226/pexels-photo-6605226.jpeg",
+        description: "Rich hot chocolate with whipped cream",
+        rating: 4.4
+    },
+    {
+        id: 57,
+        name: "Veggie Wrap",
+        category: "vegetarian",
+        price: 179,
+        image: "https://images.pexels.com/photos/461198/pexels-photo-461198.jpeg",
+        description: "Fresh vegetables in whole wheat wrap",
+        rating: 4.1
+    },
+    {
+        id: 58,
+        name: "Chicken Pot Pie",
+        category: "meals",
+        price: 229,
+        image: "https://images.pexels.com/photos/6210743/pexels-photo-6210743.jpeg",
+        description: "Creamy chicken and vegetables in flaky crust",
+        rating: 4.6
+    },
+    {
+        id: 59,
+        name: "Strawberry Milkshake",
+        category: "beverages",
+        price: 169,
+        image: "https://images.pexels.com/photos/103566/pexels-photo-103566.jpeg",
+        description: "Creamy strawberry shake",
+        rating: 4.7
+    },
+    {
+        id: 60,
+        name: "Beef Tacos",
+        category: "mexican",
+        price: 209,
+        image: "https://images.pexels.com/photos/461326/pexels-photo-461326.jpeg",
+        description: "Crispy tacos with seasoned beef",
+        rating: 4.5
+    },
+    // Items 61-80
+    {
+        id: 61,
+        name: "Chocolate Brownie",
+        category: "desserts",
+        price: 119,
+        image: "https://images.pexels.com/photos/230325/pexels-photo-230325.jpeg",
+        description: "Fudgy chocolate brownie with walnuts",
+        rating: 4.8
+    },
+    {
+        id: 62,
+        name: "Chicken Salad Sandwich",
+        category: "sandwiches",
+        price: 179,
+        image: "https://images.pexels.com/photos/4669304/pexels-photo-4669304.jpeg",
+        description: "Creamy chicken salad on whole wheat",
+        rating: 4.3
+    },
+    {
+        id: 63,
+        name: "Pepperoni Pizza",
+        category: "pizza",
+        price: 269,
+        image: "https://images.pexels.com/photos/2147491/pexels-photo-2147491.jpeg",
+        description: "Pizza with pepperoni and cheese",
+        rating: 4.7
+    },
+    {
+        id: 64,
+        name: "Falafel Wrap",
+        category: "vegetarian",
+        price: 189,
+        image: "https://images.pexels.com/photos/461198/pexels-photo-461198.jpeg",
+        description: "Crispy falafel in pita with tahini",
+        rating: 4.4
+    },
+    {
+        id: 65,
+        name: "Cobb Salad",
+        category: "salads",
+        price: 219,
+        image: "https://images.pexels.com/photos/1211887/pexels-photo-1211887.jpeg",
+        description: "Mixed greens with chicken, bacon and egg",
+        rating: 4.5
+    },
+    {
+        id: 66,
+        name: "Chicken Fried Rice",
+        category: "asian",
+        price: 199,
+        image: "https://images.pexels.com/photos/674574/pexels-photo-674574.jpeg",
+        description: "Fried rice with chicken and vegetables",
+        rating: 4.6
+    },
+    {
+        id: 67,
+        name: "Cappuccino",
+        category: "beverages",
+        price: 139,
+        image: "https://images.pexels.com/photos/302899/pexels-photo-302899.jpeg",
+        description: "Espresso with steamed milk foam",
+        rating: 4.3
+    },
+    {
+        id: 68,
+        name: "BBQ Ribs",
+        category: "meats",
+        price: 399,
+        image: "https://images.pexels.com/photos/1624487/pexels-photo-1624487.jpeg",
+        description: "Slow-cooked ribs with BBQ sauce",
+        rating: 4.8
+    },
+    {
+        id: 69,
+        name: "Vegetable Fried Rice",
+        category: "vegetarian",
+        price: 179,
+        image: "https://images.pexels.com/photos/674574/pexels-photo-674574.jpeg",
+        description: "Fried rice with mixed vegetables",
+        rating: 4.2
+    },
+    {
+        id: 70,
+        name: "Chicken Panini",
+        category: "sandwiches",
+        price: 209,
+        image: "https://images.pexels.com/photos/4669304/pexels-photo-4669304.jpeg",
+        description: "Grilled chicken sandwich with pesto",
+        rating: 4.5
+    },
+    {
+        id: 71,
+        name: "Tiramisu",
+        category: "desserts",
+        price: 169,
+        image: "https://images.pexels.com/photos/3026804/pexels-photo-3026804.jpeg",
+        description: "Classic Italian coffee-flavored dessert",
+        rating: 4.9
+    },
+    {
+        id: 72,
+        name: "Chicken Noodle Soup",
+        category: "soups",
+        price: 149,
+        image: "https://images.pexels.com/photos/539451/pexels-photo-539451.jpeg",
+        description: "Hearty soup with chicken and noodles",
+        rating: 4.4
+    },
+    {
+        id: 73,
+        name: "Breakfast Platter",
+        category: "breakfast",
+        price: 249,
+        image: "https://images.pexels.com/photos/376464/pexels-photo-376464.jpeg",
+        description: "Eggs, bacon, sausage, and potatoes",
+        rating: 4.6
+    },
+    {
+        id: 74,
+        name: "Chicken Tacos",
+        category: "mexican",
+        price: 199,
+        image: "https://images.pexels.com/photos/461326/pexels-photo-461326.jpeg",
+        description: "Soft tacos with seasoned chicken",
+        rating: 4.5
+    },
+    {
+        id: 75,
+        name: "Fruit Juice",
+        category: "beverages",
+        price: 109,
+        image: "https://images.pexels.com/photos/96974/pexels-photo-96974.jpeg",
+        description: "Freshly squeezed fruit juice",
+        rating: 4.2
+    },
+    {
+        id: 76,
+        name: "Chicken Gyro",
+        category: "wraps",
+        price: 219,
+        image: "https://images.pexels.com/photos/461198/pexels-photo-461198.jpeg",
+        description: "Grilled chicken in pita with tzatziki",
+        rating: 4.7
+    },
+    {
+        id: 77,
+        name: "Chocolate Mousse",
+        category: "desserts",
+        price: 139,
+        image: "https://images.pexels.com/photos/3026804/pexels-photo-3026804.jpeg",
+        description: "Rich chocolate dessert with cream",
+        rating: 4.8
+    },
+    {
+        id: 78,
+        name: "Bacon Burger",
+        category: "burgers",
+        price: 239,
+        image: "https://images.pexels.com/photos/1633525/pexels-photo-1633525.jpeg",
+        description: "Beef patty with crispy bacon",
+        rating: 4.6
+    },
+    {
+        id: 79,
+        name: "Minestrone Soup",
+        category: "soups",
+        price: 129,
+        image: "https://images.pexels.com/photos/539451/pexels-photo-539451.jpeg",
+        description: "Italian vegetable soup with pasta",
+        rating: 4.3
+    },
+    {
+        id: 80,
+        name: "Chicken Skewers",
+        category: "chicken",
+        price: 229,
+        image: "https://images.pexels.com/photos/6210744/pexels-photo-6210744.jpeg",
+        description: "Grilled chicken skewers with dip",
+        rating: 4.7
+    },
+    // Items 81-100
+    {
+        id: 81,
+        name: "Waffles",
+        category: "breakfast",
+        price: 159,
+        image: "https://images.pexels.com/photos/376464/pexels-photo-376464.jpeg",
+        description: "Crispy waffles with maple syrup",
+        rating: 4.5
+    },
+    {
+        id: 82,
+        name: "Chicken Caesar Wrap",
+        category: "wraps",
+        price: 199,
+        image: "https://images.pexels.com/photos/461198/pexels-photo-461198.jpeg",
+        description: "Grilled chicken with Caesar dressing",
+        rating: 4.4
+    },
+    {
+        id: 83,
+        name: "Cheese Pizza",
+        category: "pizza",
+        price: 229,
+        image: "https://images.pexels.com/photos/2147491/pexels-photo-2147491.jpeg",
+        description: "Classic cheese pizza",
+        rating: 4.3
+    },
+    {
+        id: 84,
+        name: "Fruit Tart",
+        category: "desserts",
+        price: 149,
+        image: "https://images.pexels.com/photos/1123250/pexels-photo-1123250.jpeg",
+        description: "Pastry with custard and fresh fruits",
+        rating: 4.7
+    },
+    {
+        id: 85,
+        name: "Chicken Teriyaki",
+        category: "asian",
+        price: 249,
+        image: "https://images.pexels.com/photos/674574/pexels-photo-674574.jpeg",
+        description: "Grilled chicken with teriyaki sauce",
+        rating: 4.6
+    },
+    {
+        id: 86,
+        name: "Green Salad",
+        category: "salads",
+        price: 139,
+        image: "https://images.pexels.com/photos/1211887/pexels-photo-1211887.jpeg",
+        description: "Fresh mixed greens with vinaigrette",
+        rating: 4.1
+    },
+    {
+        id: 87,
+        name: "Espresso",
+        category: "beverages",
+        price: 99,
+        image: "https://images.pexels.com/photos/302899/pexels-photo-302899.jpeg",
+        description: "Strong black coffee",
+        rating: 4.4
+    },
+    {
+        id: 88,
+        name: "Chicken Pita",
+        category: "sandwiches",
+        price: 189,
+        image: "https://images.pexels.com/photos/461198/pexels-photo-461198.jpeg",
+        description: "Grilled chicken in pita pocket",
+        rating: 4.3
+    },
+    {
+        id: 89,
+        name: "Chocolate Donut",
+        category: "desserts",
+        price: 79,
+        image: "https://images.pexels.com/photos/291528/pexels-photo-291528.jpeg",
+        description: "Glazed donut with chocolate icing",
+        rating: 4.6
+    },
+    {
+        id: 90,
+        name: "Beef Burrito",
+        category: "mexican",
+        price: 229,
+        image: "https://images.pexels.com/photos/461198/pexels-photo-461198.jpeg",
+        description: "Flour tortilla stuffed with beef",
+        rating: 4.5
+    },
+    {
+        id: 91,
+        name: "Chicken Sliders",
+        category: "burgers",
+        price: 219,
+        image: "https://images.pexels.com/photos/4669304/pexels-photo-4669304.jpeg",
+        description: "Mini chicken burgers with slaw",
+        rating: 4.4
+    },
+    {
+        id: 92,
+        name: "Fruit Yogurt",
+        category: "sides",
+        price: 119,
+        image: "https://images.pexels.com/photos/3026808/pexels-photo-3026808.jpeg",
+        description: "Yogurt with mixed fruits",
+        rating: 4.2
+    },
+    {
+        id: 93,
+        name: "Chicken Wrap",
+        category: "wraps",
+        price: 189,
+        image: "https://images.pexels.com/photos/461198/pexels-photo-461198.jpeg",
+        description: "Grilled chicken in tortilla wrap",
+        rating: 4.3
+    },
+    {
+        id: 94,
+        name: "Vegetable Soup",
+        category: "soups",
+        price: 129,
+        image: "https://images.pexels.com/photos/539451/pexels-photo-539451.jpeg",
+        description: "Hearty vegetable broth",
+        rating: 4.0
+    },
+    {
+        id: 95,
+        name: "Chocolate Pancakes",
+        category: "breakfast",
+        price: 179,
+        image: "https://images.pexels.com/photos/376464/pexels-photo-376464.jpeg",
+        description: "Pancakes with chocolate chips",
+        rating: 4.7
+    },
+    {
+        id: 96,
+        name: "Chicken Sub",
+        category: "sandwiches",
+        price: 199,
+        image: "https://images.pexels.com/photos/4669304/pexels-photo-4669304.jpeg",
+        description: "Chicken sandwich on long roll",
+        rating: 4.4
+    },
+    {
+        id: 97,
+        name: "Berry Smoothie",
+        category: "beverages",
+        price: 169,
+        image: "https://images.pexels.com/photos/96974/pexels-photo-96974.jpeg",
+        description: "Mixed berry smoothie",
+        rating: 4.6
+    },
+    {
+        id: 98,
+        name: "Chocolate Croissant",
+        category: "breakfast",
+        price: 129,
+        image: "https://images.pexels.com/photos/291528/pexels-photo-291528.jpeg",
+        description: "Flaky croissant with chocolate filling",
+        rating: 4.8
+    },
+    {
+        id: 99,
+        name: "Chicken Salad",
+        category: "salads",
+        price: 189,
+        image: "https://images.pexels.com/photos/1211887/pexels-photo-1211887.jpeg",
+        description: "Fresh greens with grilled chicken",
+        rating: 4.5
+    },
+    {
+        id: 100,
+        name: "Ice Cream Sundae",
+        category: "desserts",
+        price: 149,
+        image: "https://images.pexels.com/photos/1625235/pexels-photo-1625235.jpeg",
+        description: "Vanilla ice cream with toppings",
+        rating: 4.9
+    },
+      {
+        id: 101,
+        name: "Extra Crispy Chicken Bucket",
+        category: "chicken",
+        price: 549,
+        image: "https://images.pexels.com/photos/6210745/pexels-photo-6210745.jpeg",
+        description: "8 pieces of extra crispy chicken with signature coating",
+        rating: 4.8
+    },
+    {
+        id: 102,
+        name: "KFC Famous Bowl",
+        category: "meals",
+        price: 299,
+        image: "https://images.pexels.com/photos/5792321/pexels-photo-5792321.jpeg",
+        description: "Layered mashed potatoes, corn, crispy chicken, and gravy",
+        rating: 4.6
+    },
+    {
+        id: 103,
+        name: "Buttermilk Biscuits",
+        category: "sides",
+        price: 89,
+        image: "https://images.pexels.com/photos/5792329/pexels-photo-5792329.jpeg",
+        description: "Freshly baked buttery biscuits",
+        rating: 4.7
+    },
+    {
+        id: 104,
+        name: "Mac & Cheese",
+        category: "sides",
+        price: 129,
+        image: "https://images.pexels.com/photos/1279330/pexels-photo-1279330.jpeg",
+        description: "Creamy elbow macaroni with three-cheese blend",
+        rating: 4.5
+    },
+    {
+        id: 105,
+        name: "KFC Twister Wrap",
+        category: "wraps",
+        price: 229,
+        image: "https://images.pexels.com/photos/461198/pexels-photo-461198.jpeg",
+        description: "Crispy chicken, lettuce, and mayo in tortilla wrap",
+        rating: 4.4
+    },
+    {
+        id: 106,
+        name: "Nashville Hot Wings",
+        category: "chicken",
+        price: 279,
+        image: "https://images.pexels.com/photos/6210744/pexels-photo-6210744.jpeg",
+        description: "Spicy hot chicken wings with signature seasoning",
+        rating: 4.7
+    },
+    {
+        id: 107,
+        name: "KFC Coleslaw",
+        category: "sides",
+        price: 79,
+        image: "https://images.pexels.com/photos/2097090/pexels-photo-2097090.jpeg",
+        description: "Creamy coleslaw with cabbage and carrots",
+        rating: 4.3
+    },
+    {
+        id: 108,
+        name: "Chicken Little Sandwich",
+        category: "burgers",
+        price: 119,
+        image: "https://images.pexels.com/photos/4669304/pexels-photo-4669304.jpeg",
+        description: "Mini crispy chicken fillet with pickles on bun",
+        rating: 4.2
+    }
+];
+
+        // Initialize the application
+        $(document).ready(function () {
+            // Configure toastr
+            toastr.options = {
+                "closeButton": true,
+                "progressBar": true,
+                "positionClass": "toast-top-right",
+                "timeOut": "3000"
+            };
+
+            // Load sample data
+            menuItems = [...sampleMenuItems];
+            loadFeaturedItems();
+            loadMenuItems();
+
+            // Initialize users array if not exists
+            if (!localStorage.getItem('kfcUsers')) {
+                localStorage.setItem('kfcUsers', JSON.stringify([]));
+            }
+
+            // Check if user is logged in
+            const savedUser = JSON.parse(localStorage.getItem('kfcUser') || 'null');
+            if (savedUser) {
+                currentUser = savedUser;
+                updateUIForLoggedInUser();
+            }
+
+            // Load cart from localStorage
+            cart = JSON.parse(localStorage.getItem('kfcCart') || '[]');
+            updateCartUI();
+
+            // Set up real-time validation
+            setupValidation();
+
+            // Close dropdown when clicking outside
+            $(document).on('click', function (e) {
+                if (!$(e.target).closest('.user-dropdown').length) {
+                    $('#userDropdown').removeClass('show');
+                }
+            });
+
+            // Add event listener for Order Now button
+            $('#orderNowButton').on('click', function () {
+                var $btn = $(this);
+                $btn.addClass('clicked');
+                setTimeout(function () {
+                    $btn.removeClass('clicked');
+                }, 300);
+
+                showSection('menu');
+            });
+        });
+
+        // NEW: Toggle user dropdown
+        function toggleUserDropdown() {
+            $('#userDropdown').toggleClass('show');
+        }
+
+        // Set up real-time validation
+        function setupValidation() {
+            // Registration form validation
+            $('#firstName, #lastName').on('input', function () {
+                validateName($(this));
+            });
+
+            $('#registerEmail').on('input', function () {
+                validateEmail($(this), 'registerEmailError');
+            });
+
+            $('#phone, #profilePhone').on('input', function () {
+                validatePhone($(this));
+            });
+
+            $('#registerPassword').on('input', function () {
+                validatePassword($(this).val());
+            });
+
+            $('#confirmPassword').on('input', function () {
+                validateConfirmPassword();
+            });
+
+            $('#address, #profileAddress').on('input', function () {
+                validateAddress($(this));
+            });
+
+            // Payment form validation
+            $('#cardNumber').on('input', function () {
+                validateCardNumber($(this));
+            });
+
+            $('#cardExpiry').on('input', function () {
+                validateCardExpiry($(this));
+            });
+
+            $('#cardCvv').on('input', function () {
+                validateCardCvv($(this));
+            });
+
+            $('#upiId').on('input', function () {
+                validateUpiId($(this));
+            });
+
+            // Profile form validation
+            $('#profileFirstName, #profileLastName').on('input', function () {
+                validateName($(this));
+            });
+        }
+
+        // VALIDATION FUNCTIONS
+        function validateName(input) {
+            const value = input.val().trim();
+            const errorId = input.attr('id') + 'Error';
+
+            if (value.length < 2) {
+                input.addClass('validation-error');
+                $('#' + errorId).text('Name must be at least 2 characters');
+                return false;
+            } else if (!/^[a-zA-Z\s]*$/.test(value)) {
+                input.addClass('validation-error');
+                $('#' + errorId).text('Name can only contain letters and spaces');
+                return false;
+            } else {
+                input.removeClass('validation-error').addClass('validation-success');
+                $('#' + errorId).text('');
+                return true;
+            }
+        }
+
+        function validateEmail(input, errorId) {
+            const value = input.val().trim();
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+            if (!emailRegex.test(value)) {
+                input.addClass('validation-error');
+                $('#' + errorId).text('Please enter a valid email address');
+                return false;
+            } else {
+                input.removeClass('validation-error').addClass('validation-success');
+                $('#' + errorId).text('');
+                return true;
+            }
+        }
+
+        function validatePhone(input) {
+            const value = input.val().replace(/\D/g, '');
+            const errorId = input.attr('id') + 'Error';
+
+            if (value.length !== 10) {
+                input.addClass('validation-error');
+                $('#' + errorId).text('Please enter a valid 10-digit phone number');
+                return false;
+            } else {
+                input.removeClass('validation-error').addClass('validation-success');
+                $('#' + errorId).text('');
+                return true;
+            }
+        }
+
+        function validatePassword(password) {
+            const strengthMeter = $('#passwordStrength');
+            const requirements = {
+                length: password.length >= 8,
+                uppercase: /[A-Z]/.test(password),
+                lowercase: /[a-z]/.test(password),
+                number: /\d/.test(password),
+                special: /[!@#$%^&*(),.?":{}|<>]/.test(password)
+            };
+
+            // Update requirements UI
+            $('#reqLength').toggleClass('valid', requirements.length).toggleClass('invalid', !requirements.length);
+            $('#reqUppercase').toggleClass('valid', requirements.uppercase).toggleClass('invalid', !requirements.uppercase);
+            $('#reqLowercase').toggleClass('valid', requirements.lowercase).toggleClass('invalid', !requirements.lowercase);
+            $('#reqNumber').toggleClass('valid', requirements.number).toggleClass('invalid', !requirements.number);
+            $('#reqSpecial').toggleClass('valid', requirements.special).toggleClass('invalid', !requirements.special);
+
+            // Calculate password strength
+            const validCount = Object.values(requirements).filter(v => v).length;
+            const strength = (validCount / 5) * 100;
+
+            // Update strength meter
+            strengthMeter.css('width', strength + '%');
+
+            if (strength < 40) {
+                strengthMeter.css('background-color', '#dc3545');
+            } else if (strength < 80) {
+                strengthMeter.css('background-color', '#ffc107');
+            } else {
+                strengthMeter.css('background-color', '#28a745');
+            }
+
+            // Validate password
+            if (password.length < 6) {
+                $('#registerPassword').addClass('validation-error');
+                return false;
+            } else {
+                $('#registerPassword').removeClass('validation-error');
+                return true;
+            }
+        }
+
+        function validateConfirmPassword() {
+            const password = $('#registerPassword').val();
+            const confirm = $('#confirmPassword').val();
+
+            if (password !== confirm) {
+                $('#confirmPassword').addClass('validation-error');
+                $('#confirmPasswordError').text('Passwords do not match');
+                return false;
+            } else {
+                $('#confirmPassword').removeClass('validation-error').addClass('validation-success');
+                $('#confirmPasswordError').text('');
+                return true;
+            }
+        }
+
+        function validateAddress(input) {
+            const value = input.val().trim();
+            const errorId = input.attr('id') + 'Error';
+
+            if (value.length < 10) {
+                input.addClass('validation-error');
+                $('#' + errorId).text('Please enter a complete address (at least 10 characters)');
+                return false;
+            } else {
+                input.removeClass('validation-error').addClass('validation-success');
+                $('#' + errorId).text('');
+                return true;
+            }
+        }
+
+        function validateCardNumber(input) {
+            const value = input.val().replace(/\s+/g, '');
+
+            if (!/^\d{16}$/.test(value)) {
+                input.addClass('validation-error');
+                $('#cardNumberError').text('Please enter a valid 16-digit card number');
+                return false;
+            } else {
+                input.removeClass('validation-error').addClass('validation-success');
+                $('#cardNumberError').text('');
+                return true;
+            }
+        }
+
+        function validateCardExpiry(input) {
+            const value = input.val();
+            const [month, year] = value.split('/').map(Number);
+            const currentYear = new Date().getFullYear() % 100;
+            const currentMonth = new Date().getMonth() + 1;
+
+            if (!/^\d{2}\/\d{2}$/.test(value)) {
+                input.addClass('validation-error');
+                $('#cardExpiryError').text('Please enter in MM/YY format');
+                return false;
+            } else if (month < 1 || month > 12) {
+                input.addClass('validation-error');
+                $('#cardExpiryError').text('Invalid month');
+                return false;
+            } else if (year < currentYear || (year === currentYear && month < currentMonth)) {
+                input.addClass('validation-error');
+                $('#cardExpiryError').text('Card has expired');
+                return false;
+            } else {
+                input.removeClass('validation-error').addClass('validation-success');
+                $('#cardExpiryError').text('');
+                return true;
+            }
+        }
+
+        function validateCardCvv(input) {
+            const value = input.val();
+
+            if (!/^\d{3,4}$/.test(value)) {
+                input.addClass('validation-error');
+                $('#cardCvvError').text('Please enter a valid CVV (3-4 digits)');
+                return false;
+            } else {
+                input.removeClass('validation-error').addClass('validation-success');
+                $('#cardCvvError').text('');
+                return true;
+            }
+        }
+
+        function validateUpiId(input) {
+            const value = input.val();
+            const upiRegex = /^[\w.-]+@[\w.-]+$/;
+
+            if (!upiRegex.test(value)) {
+                input.addClass('validation-error');
+                $('#upiIdError').text('Please enter a valid UPI ID (e.g. user@paytm)');
+                return false;
+            } else {
+                input.removeClass('validation-error').addClass('validation-success');
+                $('#upiIdError').text('');
+                return true;
+            }
+        }
+
+        function validateRegistrationForm() {
+            let isValid = true;
+
+            // Validate names
+            if (!validateName($('#firstName'))) isValid = false;
+            if (!validateName($('#lastName'))) isValid = false;
+
+            // Validate email
+            if (!validateEmail($('#registerEmail'), 'registerEmailError')) isValid = false;
+
+            // Validate phone
+            if (!validatePhone($('#phone'))) isValid = false;
+
+            // Validate password
+            if (!validatePassword($('#registerPassword').val())) {
+                $('#registerPassword').addClass('validation-error');
+                isValid = false;
+            }
+
+            // Validate confirm password
+            if (!validateConfirmPassword()) isValid = false;
+
+            // Validate address
+            if (!validateAddress($('#address'))) isValid = false;
+
+            return isValid;
+        }
+
+        function validateLoginForm() {
+            let isValid = true;
+
+            // Validate email
+            if (!validateEmail($('#loginEmail'), 'loginEmailError')) isValid = false;
+
+            // Validate password
+            if ($('#loginPassword').val().length < 6) {
+                $('#loginPassword').addClass('validation-error');
+                $('#loginPasswordError').text('Password must be at least 6 characters');
+                isValid = false;
+            } else {
+                $('#loginPassword').removeClass('validation-error');
+                $('#loginPasswordError').text('');
+            }
+
+            return isValid;
+        }
+
+        function validateProfileForm() {
+            let isValid = true;
+
+            // Validate names
+            if (!validateName($('#profileFirstName'))) isValid = false;
+            if (!validateName($('#profileLastName'))) isValid = false;
+
+            // Validate phone
+            if (!validatePhone($('#profilePhone'))) isValid = false;
+
+            // Validate address
+            if (!validateAddress($('#profileAddress'))) isValid = false;
+
+            return isValid;
+        }
+
+        function validatePaymentForm() {
+            const method = $('input[name="paymentMethod"]:checked').val();
+
+            if (method === 'card') {
+                return validateCardNumber($('#cardNumber')) &&
+                    validateCardExpiry($('#cardExpiry')) &&
+                    validateCardCvv($('#cardCvv'));
+            } else if (method === 'upi') {
+                return validateUpiId($('#upiId'));
+            }
+
+            // COD requires no validation
+            return true;
+        }
+
+        // Navigation functions
+        function showSection(section) {
+            // Hide all sections
+            $('[id$="Section"]').hide();
+
+            // Show selected section
+            $(`#${section}Section`).show();
+
+            // Close dropdown
+            $('#userDropdown').removeClass('show');
+
+            // Special handling for sections that need data loading
+            if (section === 'menu') {
+                loadMenuItems();
+            } else if (section === 'orders' && currentUser) {
+                loadOrders();
+            } else if (section === 'profile' && currentUser) {
+                loadProfile();
+            } else if (section === 'orders' && !currentUser) {
+                toastr.warning('Please login to view your orders');
+                showSection('login');
+            } else if (section === 'profile' && !currentUser) {
+                toastr.warning('Please login to view your profile');
+                showSection('login');
+            }
+
+            // Update active navigation
+            $('.navbar-nav .nav-link').removeClass('active');
+            $(`.navbar-nav .nav-link[onclick="showSection('${section}')"]`).addClass('active');
+        }
+
+        // Authentication functions
+        $('#loginForm').on('submit', function (e) {
+            e.preventDefault();
+
+            if (validateLoginForm()) {
+                const email = $('#loginEmail').val();
+                const password = $('#loginPassword').val();
+
+                // Simulate login (in real app, this would be an AJAX call)
+                simulateLogin(email, password);
+            }
+        });
+
+        $('#registerForm').on('submit', function (e) {
+            e.preventDefault();
+
+            if (validateRegistrationForm()) {
+                const userData = {
+                    firstName: $('#firstName').val(),
+                    lastName: $('#lastName').val(),
+                    email: $('#registerEmail').val(),
+                    phone: $('#phone').val(),
+                    address: $('#address').val(),
+                    password: $('#registerPassword').val() // Store password for login
+                };
+
+                // Simulate registration (in real app, this would be an AJAX call)
+                simulateRegistration(userData);
+            }
+        });
+
+        function simulateLogin(email, password) {
+            // Show loading
+            $('#loginForm button').html('<i class="fas fa-spinner fa-spin"></i> Logging in...').prop('disabled', true);
+
+            setTimeout(() => {
+                // Get users array
+                const users = JSON.parse(localStorage.getItem('kfcUsers') || '[]');
+                const user = users.find(u => u.email === email && u.password === password);
+
+                if (!user) {
+                    toastr.error('Invalid email or password');
+                    $('#loginForm button').html('Login').prop('disabled', false);
+                    return;
+                }
+
+                // Set as current user
+                currentUser = user;
+                localStorage.setItem('kfcUser', JSON.stringify(currentUser));
+                updateUIForLoggedInUser();
+                toastr.success('Login successful!');
+                showSection('home');
+
+                // Reset form
+                $('#loginForm')[0].reset();
+                $('.form-control').removeClass('validation-error validation-success');
+                $('#loginForm button').html('Login').prop('disabled', false);
+            }, 1500);
+        }
+
+        function simulateRegistration(userData) {
+            // Show loading
+            $('#registerForm button').html('<i class="fas fa-spinner fa-spin"></i> Registering...').prop('disabled', true);
+
+            setTimeout(() => {
+                // Get current users
+                const users = JSON.parse(localStorage.getItem('kfcUsers'));
+
+                // Check if email already exists
+                if (users.some(u => u.email === userData.email)) {
+                    toastr.error('Email already registered');
+                    $('#registerForm button').html('Register').prop('disabled', false);
+                    return;
+                }
+
+                // Create new user
+                const newUser = {
+                    id: Date.now(),
+                    ...userData
+                };
+
+                // Add to users array
+                users.push(newUser);
+                localStorage.setItem('kfcUsers', JSON.stringify(users));
+
+                // Set as current user
+                currentUser = newUser;
+                localStorage.setItem('kfcUser', JSON.stringify(currentUser));
+                updateUIForLoggedInUser();
+                toastr.success('Registration successful! Welcome to KFC!');
+                showSection('home');
+
+                // Reset form
+                $('#registerForm')[0].reset();
+                $('.form-control').removeClass('validation-error validation-success');
+                $('#passwordStrength').css('width', '0');
+                $('.requirement').removeClass('valid').addClass('invalid');
+                $('#registerForm button').html('Register').prop('disabled', false);
+            }, 2000);
+        }
+
+        function updateUIForLoggedInUser() {
+            $('#guestDropdown').hide();
+            $('#userMenu').show();
+            toastr.success(`Welcome back, ${currentUser.firstName}!`);
+        }
+
+        function logout() {
+            currentUser = null;
+            cart = [];
+            localStorage.removeItem('kfcUser');
+            localStorage.removeItem('kfcCart');
+
+            $('#guestDropdown').show();
+            $('#userMenu').hide();
+            updateCartUI();
+            toastr.info('Logged out successfully');
+            showSection('home');
+        }
+
+        // Menu functions
+        function loadFeaturedItems() {
+            const featured = menuItems.slice(0, 30);
+            let html = '';
+
+            featured.forEach(item => {
+                html += `
+                    <div class="col-md-4">
+                        <div class="card food-card">
+                            <img src="${item.image}" class="card-img-top" alt="${item.name}">
+                            <div class="card-body">
+                                <h5 class="card-title">${item.name}</h5>
+                                <p class="card-text">${item.description}</p>
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <span class="h5 text-danger">₹${item.price}</span>
+                                    <div class="rating">
+                                        ${generateStars(item.rating)}
+                                        <small class="text-muted">(${item.rating})</small>
+                                    </div>
+                                </div>
+                                <button class="btn btn-kfc btn-block mt-2" onclick="addToCart(${item.id})">
+                                    <i class="fas fa-plus"></i> Add to Cart
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+
+            $('#featuredItems').html(html);
+        }
+
+         // NEW: Search functionality
+        function performSearch(query) {
+            if (!query.trim()) {
+                $('#searchResults').hide();
+                return;
+            }
+            
+            const searchTerm = query.toLowerCase();
+            const results = menuItems.filter(item => 
+                item.name.toLowerCase().includes(searchTerm) || 
+                item.description.toLowerCase().includes(searchTerm) ||
+                item.category.toLowerCase().includes(searchTerm)
+            );
+            
+            displaySearchResults(results);
+        }
+        
+        function displaySearchResults(results) {
+            const resultsContainer = $('#searchResults');
+            resultsContainer.empty();
+            
+            if (results.length === 0) {
+                resultsContainer.append('<div class="no-results">No menu items found. Try something else.</div>');
+            } else {
+                results.forEach(item => {
+                    const resultItem = $(`
+                        <div class="search-result-item" data-id="${item.id}">
+                            <img src="${item.image}" alt="${item.name}">
+                            <div class="search-result-info">
+                                <h6>${item.name}</h6>
+                                <p>${item.description}</p>
+                            </div>
+                            <div class="search-result-price">₹${item.price}</div>
+                        </div>
+                    `);
+                    
+                    resultItem.on('click', function() {
+                        showSection('menu');
+                        highlightMenuItem(item.id);
+                        $('#searchResults').hide();
+                        $('#searchInput').val('');
+                    });
+                    
+                    resultsContainer.append(resultItem);
+                });
+            }
+            
+            resultsContainer.show();
+        }
+        
+        function highlightMenuItem(itemId) {
+            // Scroll to the menu item and add a highlight effect
+            const menuItem = $(`.food-card[data-id="${itemId}"]`);
+            if (menuItem.length) {
+                $('html, body').animate({
+                    scrollTop: menuItem.offset().top - 100
+                }, 500);
+                
+                menuItem.css({
+                    'box-shadow': '0 0 20px rgba(255, 105, 0, 0.8)',
+                    'transform': 'scale(1.03)'
+                });
+                
+                setTimeout(() => {
+                    menuItem.css({
+                        'box-shadow': '',
+                        'transform': ''
+                    });
+                }, 2000);
+            }
+        }
+        
+        // Initialize search functionality
+        $(document).ready(function() {
+            // Search when typing
+            $('#searchInput').on('input', function() {
+                performSearch($(this).val());
+            });
+            
+            // Search button click
+            $('#searchButton').on('click', function() {
+                performSearch($('#searchInput').val());
+            });
+            
+            // Hide search results when clicking elsewhere
+            $(document).on('click', function(e) {
+                if (!$(e.target).closest('.search-container').length) {
+                    $('#searchResults').hide();
+                }
+            });
+            
+            // Add data-id attribute to menu items for highlighting
+            $('.food-card').each(function() {
+                const itemId = $(this).find('.add-to-cart-btn').data('id');
+                $(this).attr('data-id', itemId);
+            });
+        });
+
+        function loadMenuItems(category = 'all') {
+            $('#menuLoading').show();
+
+            setTimeout(() => {
+                let filteredItems = category === 'all' ? menuItems : menuItems.filter(item => item.category === category);
+                let html = '';
+
+                if (filteredItems.length === 0) {
+                    html = '<div class="col-12 text-center"><h4>No items found in this category</h4></div>';
+                } else {
+                    filteredItems.forEach(item => {
+                        html += `
+                            <div class="col-md-4 col-lg-3">
+                                <div class="card food-card">
+                                    <img src="${item.image}" class="card-img-top" alt="${item.name}">
+                                    <div class="card-body">
+                                        <h6 class="card-title">${item.name}</h6>
+                                        <p class="card-text small">${item.description}</p>
+                                        <div class="d-flex justify-content-between align-items-center mb-2">
+                                            <span class="h6 text-danger">₹${item.price}</span>
+                                            <div class="rating small">
+                                                ${generateStars(item.rating)}
+                                            </div>
+                                        </div>
+                                        <button class="btn btn-kfc btn-sm btn-block" onclick="addToCart(${item.id})">
+                                            <i class="fas fa-plus"></i> Add
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                    });
+                }
+
+                $('#menuItems').html(html);
+                $('#menuLoading').hide();
+            }, 500);
+        }
+
+        function filterMenu(category) {
+            // Update active button
+            $('.btn-group button').removeClass('active');
+            $(event.target).addClass('active');
+
+            loadMenuItems(category);
+        }
+
+        function generateStars(rating) {
+            let stars = '';
+            const fullStars = Math.floor(rating);
+            const hasHalfStar = rating % 1 !== 0;
+
+            for (let i = 0; i < fullStars; i++) {
+                stars += '<i class="fas fa-star"></i>';
+            }
+
+            if (hasHalfStar) {
+                stars += '<i class="fas fa-star-half-alt"></i>';
+            }
+
+            const emptyStars = 5 - Math.ceil(rating);
+            for (let i = 0; i < emptyStars; i++) {
+                stars += '<i class="far fa-star"></i>';
+            }
+
+            return stars;
+        }
+
+        // Cart functions
+        function addToCart(itemId) {
+            const item = menuItems.find(i => i.id === itemId);
+            if (!item) return;
+
+            const existingItem = cart.find(c => c.id === itemId);
+
+            if (existingItem) {
+                existingItem.quantity++;
+                toastr.info(`${item.name} quantity updated in cart`);
+            } else {
+                cart.push({
+                    ...item,
+                    quantity: 1
+                });
+                toastr.success(`${item.name} added to cart`);
+            }
+
+            localStorage.setItem('kfcCart', JSON.stringify(cart));
+            updateCartUI();
+        }
+
+        function removeFromCart(itemId) {
+            const itemIndex = cart.findIndex(c => c.id === itemId);
+            if (itemIndex > -1) {
+                const item = cart[itemIndex];
+                cart.splice(itemIndex, 1);
+                localStorage.setItem('kfcCart', JSON.stringify(cart));
+                updateCartUI();
+                toastr.info(`${item.name} removed from cart`);
+            }
+        }
+
+        function updateCartQuantity(itemId, change) {
+            const item = cart.find(c => c.id === itemId);
+            if (!item) return;
+
+            item.quantity += change;
+
+            if (item.quantity <= 0) {
+                removeFromCart(itemId);
+            } else {
+                localStorage.setItem('kfcCart', JSON.stringify(cart));
+                updateCartUI();
+            }
+        }
+
+        function updateCartUI() {
+            // Update cart count badge
+            const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
+            $('#cartCount').text(totalItems);
+
+            // Update cart items display
+            if (cart.length === 0) {
+                $('#cartItems').html(`
+                    <div class="text-center py-5">
+                        <i class="fas fa-shopping-cart fa-3x text-muted mb-3"></i>
+                        <h4>Your cart is empty</h4>
+                        <p class="text-muted">Add some delicious items to get started!</p>
+                        <button class="btn btn-kfc" onclick="showSection('menu')">Browse Menu</button>
+                    </div>
+                `);
+                $('#checkoutBtn').prop('disabled', true);
+            } else {
+                let html = '';
+                cart.forEach(item => {
+                    html += `
+                        <div class="card mb-3">
+                            <div class="row no-gutters">
+                                <div class="col-md-3">
+                                    <img src="${item.image}" class="card-img h-100" alt="${item.name}">
+                                </div>
+                                <div class="col-md-9">
+                                    <div class="card-body">
+                                        <div class="d-flex justify-content-between">
+                                            <h5 class="card-title">${item.name}</h5>
+                                            <button class="btn btn-outline-danger btn-sm" onclick="removeFromCart(${item.id})">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </div>
+                                        <p class="card-text">${item.description}</p>
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <span class="h6 text-danger">₹${item.price} each</span>
+                                            <div class="btn-group" role="group">
+                                                <button class="btn btn-outline-secondary btn-sm" onclick="updateCartQuantity(${item.id}, -1)">-</button>
+                                                <span class="btn btn-outline-secondary btn-sm">${item.quantity}</span>
+                                                <button class="btn btn-outline-secondary btn-sm" onclick="updateCartQuantity(${item.id}, 1)">+</button>
+                                            </div>
+                                            <span class="h6">₹${item.price * item.quantity}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                });
+                $('#cartItems').html(html);
+                $('#checkoutBtn').prop('disabled', false);
+            }
+
+            // Update order summary
+            updateOrderSummary();
+        }
+
+        function updateOrderSummary() {
+            const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+            const tax = subtotal * 0.05;
+            const delivery = cart.length > 0 ? 40 : 0;
+            const total = subtotal + tax + delivery;
+
+            $('#subtotal').text(`₹${subtotal.toFixed(2)}`);
+            $('#tax').text(`₹${tax.toFixed(2)}`);
+            $('#delivery').text(`₹${delivery.toFixed(2)}`);
+            $('#total').text(`₹${total.toFixed(2)}`);
+        }
+
+        function proceedToCheckout() {
+            if (!currentUser) {
+                toastr.warning('Please login to proceed with checkout');
+                showSection('login');
+                return;
+            }
+
+            if (cart.length === 0) {
+                toastr.error('Your cart is empty');
+                return;
+            }
+
+            // Prepare order summary for payment modal
+            let orderSummaryHtml = '';
+            cart.forEach(item => {
+                orderSummaryHtml += `
+                    <div class="d-flex justify-content-between">
+                        <span>${item.name} x${item.quantity}</span>
+                        <span>₹${item.price * item.quantity}</span>
+                    </div>
+                `;
+            });
+
+            const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+            const tax = subtotal * 0.05;
+            const delivery = 40;
+            const total = subtotal + tax + delivery;
+
+            orderSummaryHtml += `
+                <hr>
+                <div class="d-flex justify-content-between">
+                    <span>Subtotal:</span>
+                    <span>₹${subtotal.toFixed(2)}</span>
+                </div>
+                <div class="d-flex justify-content-between">
+                    <span>Tax:</span>
+                    <span>₹${tax.toFixed(2)}</span>
+                </div>
+                <div class="d-flex justify-content-between">
+                    <span>Delivery:</span>
+                    <span>₹${delivery.toFixed(2)}</span>
+                </div>
+                <div class="d-flex justify-content-between font-weight-bold">
+                    <span>Total:</span>
+                    <span>₹${total.toFixed(2)}</span>
+                </div>
+            `;
+
+            $('#paymentOrderSummary').html(orderSummaryHtml);
+            $('#paymentModal').modal('show');
+        }
+
+        // Payment functions
+        $('input[name="paymentMethod"]').on('change', function () {
+            const method = $(this).val();
+            $('#cardDetails, #upiDetails').hide();
+            $('.form-control').removeClass('validation-error validation-success');
+            $('.error-message').text('');
+
+            if (method === 'card') {
+                $('#cardDetails').show();
+            } else if (method === 'upi') {
+                $('#upiDetails').show();
+            }
+        });
+
+        function processPayment() {
+            if (!validatePaymentForm()) {
+                toastr.error('Please correct the payment details');
+                return;
+            }
+
+            const paymentMethod = $('input[name="paymentMethod"]:checked').val();
+
+            // Show loading
+            $('.modal-footer button').prop('disabled', true);
+            $('.modal-footer .btn-kfc').html('<i class="fas fa-spinner fa-spin"></i> Processing...');
+
+            setTimeout(() => {
+                // Create order
+                const order = {
+                    id: Date.now(),
+                    userId: currentUser.id,
+                    items: [...cart],
+                    total: cart.reduce((sum, item) => sum + (item.price * item.quantity), 0) +
+                        (cart.reduce((sum, item) => sum + (item.price * item.quantity), 0) * 0.05) + 40,
+                    paymentMethod: paymentMethod,
+                    status: 'Delivered',
+                    orderDate: new Date().toISOString(),
+                    deliveryAddress: currentUser.address
+                };
+
+                // Save order (in real app, this would be sent to server)
+                let orders = JSON.parse(localStorage.getItem('kfcOrders') || '[]');
+                orders.push(order);
+                localStorage.setItem('kfcOrders', JSON.stringify(orders));
+
+                // Clear cart
+                cart = [];
+                localStorage.setItem('kfcCart', JSON.stringify(cart));
+                updateCartUI();
+
+                $('#paymentModal').modal('hide');
+                toastr.success('Order placed successfully! You will receive a confirmation SMS.');
+
+                // Reset payment form
+                $('.modal-footer button').prop('disabled', false);
+                $('.modal-footer .btn-kfc').html('Place Order');
+
+                showSection('orders');
+            }, 2000);
+        }
+
+        // Orders functions
+        function loadOrders() {
+            $('#ordersLoading').show();
+
+            setTimeout(() => {
+                // Load orders from localStorage
+                let orders = JSON.parse(localStorage.getItem('kfcOrders') || '[]');
+
+                // Filter orders by current user
+                const userOrders = orders.filter(order => order.userId === currentUser.id);
+
+                let html = '';
+
+                if (userOrders.length === 0) {
+                    html = `
+                        <div class="text-center py-5">
+                            <i class="fas fa-receipt fa-3x text-muted mb-3"></i>
+                            <h4>No orders yet</h4>
+                            <p class="text-muted">Start ordering to see your history here!</p>
+                            <button class="btn btn-kfc" onclick="showSection('menu')">Browse Menu</button>
+                        </div>
+                    `;
+                } else {
+                    // Sort orders by date (newest first)
+                    userOrders.sort((a, b) => new Date(b.orderDate) - new Date(a.orderDate));
+
+                    userOrders.forEach(order => {
+                        const orderDate = new Date(order.orderDate);
+                        const formattedDate = `${orderDate.toLocaleDateString()} ${orderDate.toLocaleTimeString()}`;
+
+                        html += `
+                            <div class="card order-card mb-3">
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-between">
+                                        <div>
+                                            <h5 class="card-title">Order #${order.id}</h5>
+                                            <p class="order-date">${formattedDate}</p>
+                                        </div>
+                                        <div>
+                                            <span class="badge badge-success order-status">${order.status}</span>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="mt-3">
+                                        <h6>Items:</h6>
+                                        <ul class="list-group">
+                                            ${order.items.map(item => `
+                                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                                    ${item.name}
+                                                    <span class="badge badge-primary badge-pill">x${item.quantity}</span>
+                                                    <span>₹${(item.price * item.quantity).toFixed(2)}</span>
+                                                </li>
+                                            `).join('')}
+                                        </ul>
+                                    </div>
+                                    
+                                    <div class="mt-3">
+                                        <div class="d-flex justify-content-between">
+                                            <strong>Payment Method:</strong>
+                                            <span>${order.paymentMethod.toUpperCase()}</span>
+                                        </div>
+                                        <div class="d-flex justify-content-between">
+                                            <strong>Delivery Address:</strong>
+                                            <span>${order.deliveryAddress}</span>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="d-flex justify-content-between mt-3">
+                                        <button class="btn btn-outline-danger btn-sm" onclick="reorder(${order.id})">
+                                            <i class="fas fa-redo"></i> Reorder
+                                        </button>
+                                        <button class="btn btn-outline-warning btn-sm" onclick="openRatingModal(${order.id})">
+                                            <i class="fas fa-star"></i> Rate Order
+                                        </button>
+                                        <strong>Total: ₹${order.total.toFixed(2)}</strong>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                    });
+                }
+
+                $('#ordersList').html(html);
+                $('#ordersLoading').hide();
+            }, 1000);
+        }
+
+        function reorder(orderId) {
+            // Load orders from localStorage
+            let orders = JSON.parse(localStorage.getItem('kfcOrders') || '[]');
+            const order = orders.find(o => o.id === orderId);
+
+            if (order) {
+                // Clear current cart
+                cart = [];
+
+                // Add order items to cart
+                order.items.forEach(item => {
+                    cart.push({
+                        ...item,
+                        quantity: item.quantity
+                    });
+                });
+
+                localStorage.setItem('kfcCart', JSON.stringify(cart));
+                updateCartUI();
+                toastr.success('Items added to cart!');
+                showSection('cart');
+            }
+        }
+
+        // Rating functions
+        function openRatingModal(orderId) {
+            $('#ratingOrderId').val(orderId);
+            $('#selectedRating').val(0);
+            $('#ratingComments').val('');
+            $('.rating-stars i').removeClass('text-warning').addClass('text-muted');
+            $('#ratingError').text('');
+            $('#ratingModal').modal('show');
+        }
+
+        // Star rating interaction
+        $(document).on('click', '.rating-stars i', function () {
+            const rating = $(this).data('rating');
+            $('#selectedRating').val(rating);
+
+            $('.rating-stars i').removeClass('text-warning').addClass('text-muted');
+            for (let i = 1; i <= rating; i++) {
+                $(`.rating-stars i[data-rating="${i}"]`).removeClass('text-muted').addClass('text-warning');
+            }
+
+            $('#ratingError').text('');
+        });
+
+        function submitRating() {
+            const rating = $('#selectedRating').val();
+
+            if (rating == 0) {
+                $('#ratingError').text('Please select a rating');
+                return;
+            }
+
+            const orderId = $('#ratingOrderId').val();
+            const comments = $('#ratingComments').val();
+
+            // Save rating (in real app, this would be sent to server)
+            const ratingData = {
+                orderId: orderId,
+                userId: currentUser.id,
+                rating: rating,
+                comments: comments,
+                date: new Date().toISOString()
+            };
+
+            // Simulate saving rating
+            toastr.success('Thank you for your rating!');
+            $('#ratingModal').modal('hide');
+        }
+
+        // Profile functions
+        function loadProfile() {
+            if (!currentUser) return;
+
+            $('#profileFirstName').val(currentUser.firstName);
+            $('#profileLastName').val(currentUser.lastName);
+            $('#profileEmail').val(currentUser.email);
+            $('#profilePhone').val(currentUser.phone);
+            $('#profileAddress').val(currentUser.address);
+
+            // Load user stats
+            const orders = JSON.parse(localStorage.getItem('kfcOrders') || '[]');
+            const userOrders = orders.filter(order => order.userId === currentUser.id);
+
+            $('#totalOrders').text(userOrders.length);
+
+            const totalSpent = userOrders.reduce((sum, order) => sum + order.total, 0);
+            $('#totalSpent').text(`₹${totalSpent.toFixed(2)}`);
+
+            // Average rating (simulated)
+            $('#avgRating').text('4.2');
+        }
+
+        $('#profileForm').on('submit', function (e) {
+            e.preventDefault();
+
+            if (validateProfileForm()) {
+                // Update user data
+                currentUser.firstName = $('#profileFirstName').val();
+                currentUser.lastName = $('#profileLastName').val();
+                currentUser.phone = $('#profilePhone').val();
+                currentUser.address = $('#profileAddress').val();
+
+                localStorage.setItem('kfcUser', JSON.stringify(currentUser));
+
+                // Update users array
+                let users = JSON.parse(localStorage.getItem('kfcUsers') || '[]');
+                const userIndex = users.findIndex(u => u.id === currentUser.id);
+                if (userIndex !== -1) {
+                    users[userIndex] = currentUser;
+                    localStorage.setItem('kfcUsers', JSON.stringify(users));
+                }
+
+                updateUIForLoggedInUser();
+                toastr.success('Profile updated successfully!');
+            }
+        });
+
+        // Initialize on page load
+        loadFeaturedItems();
+
+        // Add animation to slogan on load
+        window.addEventListener('load', function () {
+            const slogan = document.querySelector('.slogan');
+            slogan.style.opacity = '0';
+            slogan.style.transform = 'translateY(30px)';
+
+            setTimeout(() => {
+                slogan.style.transition = 'opacity 1s ease, transform 1s ease';
+                slogan.style.opacity = '1';
+                slogan.style.transform = 'translateY(0)';
+            }, 300);
+        });
+    </script>
+</body>
+
+</html>
